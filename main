@@ -1,0 +1,18 @@
+#include <fstream>
+#include <iostream>
+#include <thread>
+#include <opencv2/opencv.hpp>
+#include "libs/httplib.h"
+#include "libs/json.hpp"
+#include <termios.h>
+#include <boost/asio.hpp>
+#include <boost/bind/bind.hpp>
+#include <pigpio.h>
+#include <linux/i2c-dev.h>
+
+// I2C address of the slave device
+#define I2C_ADDR 0x5b
+// Register address for the high 8 bits of temperature
+unsigned char TEMP_HIGH_REG = 0x04;
+// Register address for the low 8 bits of temperature
+unsigned char TEMP_LOW_REG = 0x05;
