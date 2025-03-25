@@ -1,4 +1,4 @@
-//wei zihan
+//zihan wei
 // === Main Entry Point ===
 
 int main(void) {
@@ -35,7 +35,7 @@ int main(void) {
 // === Hardware Gpio Temp ===
 
 
-// === 鍑芥暟锛歩nitPWM ===
+// yixuan ding
 void initPWM() {
     // Set the pins to output mode
     gpioSetMode(PIN_17, PI_OUTPUT);
