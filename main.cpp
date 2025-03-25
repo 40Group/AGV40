@@ -1,4 +1,19 @@
+//wei zihan
+// === Main Entry Point ===
 
+int main(void) {
+    init();
+
+    // Start the thread to capture camera frames
+    std::thread capture_thread(capture_frames);
+    // Detach the thread so that it can run independently
+    capture_thread.detach();
+
+    std::thread temp_control_thread(temp_control);
+    temp_control_thread.detach();
+
+    std::thread distance_thread(get_distance);
+    distance_thread.detach();
 
 
 
