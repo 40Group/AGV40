@@ -51,6 +51,15 @@ void initPWM() {
 }
 
 
+
+
+
+
+
+
+
+
+
 //KUN MAO
 // === Web Api Server ===
 
@@ -64,16 +73,7 @@ std::string generate_frames() {
     // Encode the frame as a JPEG image
     imencode(".jpg", latest_frame, buffer);
 
-    std::string frame_str(buffer.begin(), buffer.end());
-    std::string boundary = "frame";
-    std::stringstream ss;
-    // Format the frame data as a multipart response
-    ss << "--" << boundary << "\r\n";
-    ss << "Content-Type: image/jpeg\r\n\r\n";
-    ss << frame_str << "\r\n";
-    return ss.str();
-}
-
+    
 
 
 
