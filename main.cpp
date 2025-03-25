@@ -77,7 +77,28 @@ std::string generate_frames() {
 
 
 
+//YANSHI WANG
+//state_machine_threads
 
+// === timer_handler ===
+void timer_handler(const boost::system::error_code & /*e*/,
+                   boost::asio::steady_timer *timer) {
+    // std::cout << "Timer triggered, current time: " << std::chrono::steady_clock::now().time_since_epoch().count() << std::endl;
+
+    // Check if the running status of the car has changed
+    if (carRunStatus != precarRunStatus) {
+        if (carRunStatus) {
+            // If the car should run, call the car_run function
+            car_run();
+            currentState = STATE_LINE_FOLLOWING;
+        } else {
+            // If the car should stop, call the car_stop function
+            car_stop();
+            currentState = STATE_STOPPED;
+        }
+        // Update the previous running status
+        precarRunStatus = carRunStatus;
+    }
 
 
 
