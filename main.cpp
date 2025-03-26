@@ -1,3 +1,13 @@
+#include <fstream>
+#include <iostream>
+#include <thread>
+#include <opencv2/opencv.hpp>
+#include "libs/httplib.h"
+#include "libs/json.hpp"
+#include <opencv2/opencv.hpp>
+#include <linux/i2c-dev.h>
+
+
 //zihan wei
 // === Main Entry Point ===
 
@@ -120,7 +130,11 @@ void timer_handler(const boost::system::error_code & /*e*/,
 // === Vision Line Pid ===
 
 
-// === 鍑芥暟锛歡etLineCenter ===
+
+
+
+
+// 
 cv::Point getLineCenter(const cv::Mat &binary) {
     // Calculate the moments of the binary image
     cv::Moments m = cv::moments(binary, true);
@@ -136,63 +150,47 @@ cv::Point getLineCenter(const cv::Mat &binary) {
     }
     return center;
 }
+//zhelishi
+void timer2_handler(const boost::system::error_code & /*e*/,
+                    boost::asio::steady_timer *timer2) {
+    // PID controller parameters
+    double kp = 25;
+    double ki = 0;
+    double kd = 0;
 
-// === 鍑芥暟锛歡enerateControlCommand ===
-int generateControlCommand(const cv::Point &center, int frameWidth) {
-    int centerX = center.x;
-    int halfWidth = frameWidth / 2;
+    // PID controller related variables
+    static double integral = 0;
+    static double previous_error = 0;
 
-    // Define PID parameters, which need to be adjusted according to the actual situation
-    double Kp = 1.5625;
-    double Ki = 0;
-    double Kd = 0;
-
-    // Initialize the integral term and the previous error
-    static double integral = 0.0;
-    static double previousError = 0.0;
-
-    // Calculate the current error, modify the error calculation method so that the error is positive when the target is on the right
-    double error = centerX - halfWidth;
-
-    // Check if the error is within the range of 5
-    if (std::abs(error) <= 5) {
-        // If the error is within the range, reset the integral term to avoid integral accumulation
-        integral = 0.0;
-        previousError = 0.0;
-        return 1500;
-    }
-
-    // Update the integral term
-    integral += error;
-
-    // Calculate the derivative term
-    double derivative = error - previousError;
+    double temp = get_temp();
 
     // Calculate the PID output
-    double pidOutput = Kp * error + Ki * integral + Kd * derivative;
+    double error = setpoint - temp;
+    integral += error;
+    double derivative = error - previous_error;
+    double pid_output = kp * error + ki * integral + kd * derivative;
+    previous_error = error;
 
-    // Update the previous error
-    previousError = error;
-
-    // The basic output value is 1500
-    int baseOutput = 1500;
-
-    // The final output
-    int finalOutput = baseOutput + static_cast<int>(pidOutput);
-
-    // Limit the output range to 1000 - 2000
-    finalOutput = std::max(1000, std::min(2000, finalOutput));
-
-    return finalOutput;
-}
-
-// === 鍑芥暟锛歞rawCenterlineOnColorImage ===
-void drawCenterlineOnColorImage(cv::Mat &colorImage, const std::vector<cv::Point> &centerlinePoints) {
-    for (size_t i = 0; i < centerlinePoints.size() - 1; ++i) {
-        // Draw a line between adjacent centerline points
-        cv::line(colorImage, centerlinePoints[i], centerlinePoints[i + 1], cv::Scalar(0, 255, 0), 2);
+    if (std::abs(error) <= 0.4) {
+        // If the error is within the range, reset the integral term to avoid integral accumulation
+        integral = 0.0;
+        previous_error = 0.0;
+    }else {
+        // Control the cooling plate or heating plate according to the PID output
+        if (pid_output > 0) {
+            // Heating
+            double dutyCycle = std::min(1.0, std::max(0.0, pid_output));
+            setPWM_DutyCycle(27, dutyCycle);
+            setPWM_DutyCycle(17, 0.0); // Turn off the cooling plate
+        } else {
+            // Cooling
+            double dutyCycle = std::min(1.0, std::max(0.0, -pid_output));
+            setPWM_DutyCycle(17, dutyCycle);
+            setPWM_DutyCycle(27, 0.0); // Turn off the heating plate
+        }
     }
-}
+
+//daozheli
 
 //zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq
 
