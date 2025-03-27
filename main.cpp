@@ -4,6 +4,9 @@
 #include <opencv2/opencv.hpp>
 #include "libs/httplib.h"
 #include "libs/json.hpp"
+#include <termios.h>
+#include <boost/asio.hpp>
+#include <boost/bind/bind.hpp>
 #include <opencv2/opencv.hpp>
 #include <linux/i2c-dev.h>
 
@@ -189,6 +192,38 @@ void timer2_handler(const boost::system::error_code & /*e*/,
             setPWM_DutyCycle(27, 0.0); // Turn off the heating plate
         }
     }
+
+// Function to generate video streams
+std::string generate_frames() {
+    if (latest_frame.empty()) {
+        return "";
+    }
+    std::vector<uchar> buffer;
+    // Encode the frame as a JPEG image
+    imencode(".jpg", latest_frame, buffer);
+
+    std::string frame_str(buffer.begin(), buffer.end());
+    std::string boundary = "frame";
+    std::stringstream ss;
+    // Format the frame data as a multipart response
+    ss << "--" << boundary << "\r\n";
+    ss << "Content-Type: image/jpeg\r\n\r\n";
+    ss << frame_str << "\r\n";
+    return ss.str();
+}
+
+void timer1_handler(const boost::system::error_code & /*e*/,
+                    boost::asio::steady_timer *timer1) {
+    distance = measureDistance();
+    // std::cout << "Distance: " << distance << " cm" << std::endl;
+
+    // Reset the timer to trigger again after 600 milliseconds
+    timer1->expires_at(timer1->expiry() + boost::asio::chrono::milliseconds(100));
+    // Asynchronously wait for the timer to expire and call the timer_handler function
+    timer1->async_wait(boost::bind(timer1_handler,
+                                   boost::asio::placeholders::error,
+                                   timer1));
+}
 
 //daozheli
 
