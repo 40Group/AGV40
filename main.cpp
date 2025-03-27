@@ -27,7 +27,27 @@ int main(void) {
 
     std::thread distance_thread(get_distance);
     distance_thread.detach();
+ Server svr;
 
+    svr.set_base_dir("/home/pi/program/dist");
+
+    svr.Get("/", [](const Request &req, Response &res) {
+        try {
+            std::ifstream file("/home/pi/program/dist/index.html");
+            if (file.is_open()) {
+                std::stringstream buffer;
+                buffer << file.rdbuf();
+                std::string content = buffer.str();
+                res.set_content(content, "text/html");
+            } else {
+                res.status = 404;
+                res.set_content("File not found", "text/plain");
+            }
+        } catch (...) {
+            res.status = 500;
+            res.set_content("Internal server error", "text/plain");
+        }
+    });
 
 
 
