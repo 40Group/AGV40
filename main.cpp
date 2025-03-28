@@ -48,7 +48,10 @@ int main(void) {
             res.set_content("Internal server error", "text/plain");
         }
     });
-
+    // Define a route to handle video stream requests
+    svr.Get("/video_feed", [](const Request &req, Response &res) {
+        res.set_content(generate_frames(), "multipart/x-mixed-replace; boundary=frame");
+    });
 
 
 
