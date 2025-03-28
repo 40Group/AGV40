@@ -157,22 +157,7 @@ void timer_handler(const boost::system::error_code & /*e*/,
 
 
 
-// 
-cv::Point getLineCenter(const cv::Mat &binary) {
-    // Calculate the moments of the binary image
-    cv::Moments m = cv::moments(binary, true);
-    cv::Point center;
-    // If the zero - order moment is not zero, calculate the center coordinates
-    if (m.m00 != 0) {
-        center.x = static_cast<int>(m.m10 / m.m00);
-        center.y = static_cast<int>(m.m01 / m.m00);
-    } else {
-        // If the zero - order moment is zero, set the center coordinates to (0, 0)
-        center.x = 0;
-        center.y = 0;
-    }
-    return center;
-}
+
 //zhelishi
 void timer2_handler(const boost::system::error_code & /*e*/,
                     boost::asio::steady_timer *timer2) {
@@ -243,6 +228,33 @@ void timer1_handler(const boost::system::error_code & /*e*/,
     timer1->async_wait(boost::bind(timer1_handler,
                                    boost::asio::placeholders::error,
                                    timer1));
+}
+
+// Find the centerline contour points of the trajectory line
+std::vector<cv::Point> findCenterlinePoints(const cv::Mat &binary, const std::vector<cv::Point> &contour) {
+    std::vector<cv::Point> centerlinePoints;
+    // Calculate the bounding rectangle of the contour
+    cv::Rect boundingRect = cv::boundingRect(contour);
+    for (int y = boundingRect.y; y < boundingRect.y + boundingRect.height; ++y) {
+        // Get a single row of the binary image
+        cv::Mat row = binary.row(y);
+        // Calculate the moments of the row
+        cv::Moments m = cv::moments(row, true);
+        if (m.m00 != 0) {
+            // If the zero - order moment is not zero, calculate the center x - coordinate of the row
+            int centerX = static_cast<int>(m.m10 / m.m00);
+            centerlinePoints.emplace_back(centerX, y);
+        }
+    }
+    return centerlinePoints;
+}
+
+// Draw the centerline contour on the color image
+void drawCenterlineOnColorImage(cv::Mat &colorImage, const std::vector<cv::Point> &centerlinePoints) {
+    for (size_t i = 0; i < centerlinePoints.size() - 1; ++i) {
+        // Draw a line between adjacent centerline points
+        cv::line(colorImage, centerlinePoints[i], centerlinePoints[i + 1], cv::Scalar(0, 255, 0), 2);
+    }
 }
 
 //daozheli
