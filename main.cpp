@@ -243,7 +243,6 @@ int generateControlCommand(const cv::Point &center, int frameWidth) {
     return finalOutput;
 }
 
-
 // Find the centerline contour points of the trajectory line
 std::vector<cv::Point> findCenterlinePoints(const cv::Mat &binary, const std::vector<cv::Point> &contour) {
     std::vector<cv::Point> centerlinePoints;
@@ -272,6 +271,7 @@ void drawCenterlineOnColorImage(cv::Mat &colorImage, const std::vector<cv::Point
 }
 
 
+////////////////////////////////////////////
 
 // Function to generate video streams
 std::string generate_frames() {
