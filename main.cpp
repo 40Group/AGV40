@@ -71,7 +71,7 @@ int main(void) {
 // === Hardware Gpio Temp ===
 
 
-// yixuan ding
+// Yixuan ding
 void initPWM() {
     // Set the pins to output mode
     gpioSetMode(PIN_17, PI_OUTPUT);
@@ -86,7 +86,16 @@ void initPWM() {
     gpioSetPWMrange(PIN_27, 1000);
 }
 
+void initmeasureDistance() {
+    if (gpioInitialise() < 0) {
+        std::cerr << "Failed to initialize pigpio library." << std::endl;
+        exit(1);
+    }
 
+    // Set the Trig pin as an output mode and the Echo pin as an input mode
+    gpioSetMode(TRIG_PIN, PI_OUTPUT);
+    gpioSetMode(ECHO_PIN, PI_INPUT);
+}
 
 
 
