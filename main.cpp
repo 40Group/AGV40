@@ -65,8 +65,23 @@ int main(void) {
             res.set_content("Error", "text/plain");
         }
     });
-
-
+// Define a route to handle video stream requests
+    svr.Get("/video_feed", [](const Request &req, Response &res) {
+        res.set_content(generate_frames(), "multipart/x-mixed-replace; boundary=frame");
+    });
+// New route to receive the switch status sent from the front - end
+    svr.Post("/api/curtainSwitch", [](const Request &req, Response &res) {
+        try {
+            // Parse the JSON data from the request body
+            auto json = nlohmann::json::parse(req.body);
+            // Update the running status of the car
+            carRunStatus = json["status"];
+            std::cout << "Modified status: " << carRunStatus << std::endl;
+            res.set_content("Success", "text/plain");
+        } catch (...) {
+            res.set_content("Error", "text/plain");
+        }
+    });
 
 
 
