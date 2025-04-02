@@ -180,6 +180,142 @@ void timer_handler(const boost::system::error_code & /*e*/,
         // Update the previous running status
         precarRunStatus = carRunStatus;
     }
+ Mat frame;
+    // Read a frame from the camera
+    cap.read(frame);
+
+    if (!frame.empty()) {
+        // Check the running status of the car
+        if (carRunStatus) {
+            if (is_turning_right || is_turning_left) {
+                auto current_time = std::chrono::steady_clock::now();
+                auto elapsed_time = std::chrono::duration_cast<std::chrono::milliseconds>(
+                    current_time - turn_start_time).count();
+                std::cout << elapsed_time << std::endl;
+
+                if (is_turning_right) {
+                    if (elapsed_time >= 1000) {
+                        // Turn right for two seconds
+                        car_turn_left();
+                        is_turning_right = false;
+                        is_turning_left = true;
+                        turn_start_time = std::chrono::steady_clock::now();
+                    }
+                } else if (is_turning_left) {
+                    if (elapsed_time >= 1000) {
+                        // After two seconds left turn
+                        is_turning_left = false;
+                        currentState = STATE_LINE_FOLLOWING;
+                    }
+                }
+                latest_frame = frame.clone();
+            } else {
+                switch (currentState) {
+                    case STATE_LINE_FOLLOWING: {
+                        // std::cout << distance << std::endl;
+                        // Check the distance
+                        if (distance < 35) {
+                            // An obstacle is considered if the distance is less than 20cm
+                            // car_stop();
+                            currentState = STATE_OBSTACLE_AVOIDANCE;
+                        } else {
+                            cv::Mat gray;
+                            // Convert the frame to grayscale
+                            cv::cvtColor(frame, gray, cv::COLOR_BGR2GRAY);
+
+                            // Color filtering to identify black lines
+                            cv::Mat binary;
+                            // Threshold the grayscale image to get a binary image
+                            threshold(gray, binary, 50, 255, THRESH_BINARY_INV);
+
+                            // Morphological operations
+                            cv::Mat kernel = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(3, 3));
+                            // Perform an opening operation to remove small noise
+                            cv::morphologyEx(binary, binary, cv::MORPH_OPEN, kernel);
+                            // Perform a closing operation to connect broken trajectories
+                            cv::morphologyEx(binary, binary, cv::MORPH_CLOSE, kernel);
+
+                            // Contour detection
+                            std::vector<std::vector<cv::Point> > contours;
+                            std::vector<cv::Vec4i> hierarchy;
+                            // Find contours in the binary image
+                            cv::findContours(binary, contours, hierarchy, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
+
+                            // Select the trajectory
+                            std::vector<cv::Point> selectedContour;
+                            for (const auto &contour: contours) {
+                                double area = cv::contourArea(contour);
+                                if (area > 100) {
+                                    // Select the contour with an area greater than 100
+                                    selectedContour = contour;
+                                    break;
+                                }
+                            }
+
+                            if (!selectedContour.empty()) {
+                                // Calculate the center of gravity of the line
+                                cv::Point center = getLineCenter(binary);
+
+                                // Generate control commands
+                                int command = generateControlCommand(center, binary.cols);
+                                const char *message_template = "{#010P%dT0000!}";
+                                char message[50];
+                                // Format the control command into a message
+                                snprintf(message, sizeof(message), message_template, command);
+                                // Write the message to the serial port
+                                ssize_t bytesWritten = write(serialFd, message, strlen(message));
+                                if (bytesWritten == -1) {
+                                    std::cerr << "Failed to send message via serial port" << std::endl;
+                                }
+                                // std::cout << "Output: " << command << std::endl;
+                                // std::cout << "Concatenated message: " << message << std::endl;
+
+                                // Find the centerline contour points of the trajectory line
+                                std::vector<cv::Point> centerlinePoints = findCenterlinePoints(binary, selectedContour);
+
+                                // Draw the centerline contour on the color image
+                                cv::Mat colorImageWithCenterline = frame.clone();
+                                drawCenterlineOnColorImage(colorImageWithCenterline, centerlinePoints);
+
+                                // Update the latest frame
+                                latest_frame = colorImageWithCenterline.clone();
+                            } else {
+                                // If no contour is selected, use the original frame
+                                latest_frame = frame.clone();
+                            }
+                        }
+                        break;
+                    }
+                    case STATE_OBSTACLE_AVOIDANCE: {
+                        car_turn_right();
+                        turn_start_time = std::chrono::steady_clock::now();
+                        is_turning_right = true;
+                        latest_frame = frame.clone();
+                        break;
+                    }
+                    case STATE_STOPPED: {
+                        latest_frame = frame.clone();
+                        break;
+                    }
+                }
+            }
+        } else {
+            // If the car is not running, use the original frame
+            latest_frame = frame.clone();
+        }
+    } else {
+        // If the frame is empty, use the original frame
+        latest_frame = frame.clone();
+    }
+
+    // Reset the timer to trigger again after 30 milliseconds
+    timer->expires_at(timer->expiry() + boost::asio::chrono::milliseconds(30));
+    // Asynchronously wait for the timer to expire and call the timer_handler function
+    timer->async_wait(boost::bind(timer_handler,
+                                  boost::asio::placeholders::error,
+                                  timer));
+}
+
 
 
 
