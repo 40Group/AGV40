@@ -132,12 +132,14 @@ void initmeasureDistance() {
 
 
 
+
+
 //KUN MAO first part
 
-// === Car Control Serial ===
+// === Car Control ===
 
 
-// === 函数：car_run ===
+// === Function to make the car run ===
 void car_run() {
     const char *message1 = "{#008P2000T0000!#009P1000T0000!}";
     // Write the message to the serial port
@@ -146,6 +148,25 @@ void car_run() {
         std::cerr << "Failed to send message via serial port" << std::endl;
     }
 }    
+
+// Function to make the car stop
+void car_stop() {
+    const char *message1 = "{#008P1500T0000!#009P1500T0000!}";
+    // Write the message to the serial port
+    ssize_t bytesWritten = write(serialFd, message1, strlen(message1));
+    if (bytesWritten == -1) {
+        std::cerr << "Failed to send message via serial port" << std::endl;
+    }
+}
+
+
+
+
+
+
+
+
+
 
 
 
@@ -436,7 +457,6 @@ std::string generate_frames() {
     return ss.str();
 }
 
-// KUN MAO
 
 
 
