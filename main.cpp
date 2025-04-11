@@ -386,6 +386,7 @@ void timer_handler(const boost::system::error_code & /*e*/,
 
 //zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzqqqqqqqq
 // === 图像模块处理（摄像头帧的处理、轨迹线检测、中心点计算以及视频帧生成） ===
+// === Vision Line Pid ===
 
 
 // Calculate the center of gravity of the line
@@ -481,7 +482,7 @@ void drawCenterlineOnColorImage(cv::Mat &colorImage, const std::vector<cv::Point
     }
 }
 
-
+//zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzqqqqqqqqqqqqqqqqq
 
 // KUN  MAO second part
 
