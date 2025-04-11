@@ -82,7 +82,17 @@ int main(void) {
             res.set_content("Error", "text/plain");
         }
     });
+// temperature
+    svr.Get("/api/temperature", [](const httplib::Request &, httplib::Response &res) {
+        double temperature = get_temp();
+        std::string json = "{\"temperature\": " + std::to_string(temperature) + "}";
+        res.set_content(json, "application/json");
+    });
 
+    svr.Get("/api/targetTemperature", [](const httplib::Request &, httplib::Response &res) {
+        std::string json = "{\"target\": " + std::to_string(setpoint) + "}";
+        res.set_content(json, "application/json");
+    });
 
 
 
