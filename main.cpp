@@ -132,29 +132,20 @@ void initmeasureDistance() {
 
 
 
-//KUN MAO
-// === Web Api Server ===
+//KUN MAO first part
+
+// === Car Control Serial ===
 
 
-// === Function：generate_frames ===
-std::string generate_frames() {
-    if (latest_frame.empty()) {
-        return "";
+// === 函数：car_run ===
+void car_run() {
+    const char *message1 = "{#008P2000T0000!#009P1000T0000!}";
+    // Write the message to the serial port
+    ssize_t bytesWritten = write(serialFd, message1, strlen(message1));
+    if (bytesWritten == -1) {
+        std::cerr << "Failed to send message via serial port" << std::endl;
     }
-    std::vector<uchar> buffer;
-    // Encode the frame as a JPEG image
-    imencode(".jpg", latest_frame, buffer);
-
-    std::string frame_str(buffer.begin(), buffer.end());
-    std::string boundary = "frame";
-    std::stringstream ss;
-    // Format the frame data as a multipart response
-    ss << "--" << boundary << "\r\n";
-    ss << "Content-Type: image/jpeg\r\n\r\n";
-    ss << frame_str << "\r\n";
-    return ss.str();
-}
-    
+}    
 
 
 
@@ -422,7 +413,9 @@ void drawCenterlineOnColorImage(cv::Mat &colorImage, const std::vector<cv::Point
 }
 
 
-////////////////////////////////////////////
+
+// KUN  MAO second part
+
 
 // Function to generate video streams
 std::string generate_frames() {
@@ -443,11 +436,7 @@ std::string generate_frames() {
     return ss.str();
 }
 
-
-//zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq
-
-
-
+// KUN MAO
 
 
 
