@@ -98,7 +98,7 @@ int main(void) {
 // === Hardware Gpio Temp ===
 
 
-// Yixuan ding
+// Yixuan Ding
 void initPWM() {
     // Set the pins to output mode
     gpioSetMode(PIN_17, PI_OUTPUT);
@@ -124,6 +124,54 @@ void initmeasureDistance() {
     gpioSetMode(ECHO_PIN, PI_INPUT);
 }
 
+// === 鍑芥暟锛歩nittemp ===
+void inittemp() {
+    // Open the I2C device file
+    if ((file = open("/dev/i2c-1", O_RDWR)) < 0) {
+        std::cerr << "Failed to open the i2c bus" << std::endl;
+    }
+
+    // Set the slave device address
+    if (ioctl(file, I2C_SLAVE, I2C_ADDR) < 0) {
+        std::cerr << "Failed to acquire bus access and/or talk to slave" << std::endl;
+        close(file);
+    }
+}
+
+// === 鍑芥暟锛歡et_temp ===
+float get_temp() {
+    // Read the high 8 bits of temperature data
+    if (write(file, &TEMP_HIGH_REG, 1) != 1) {
+        std::cerr << "Failed to write to the i2c bus" << std::endl;
+        close(file);
+    }
+    unsigned char temp_high;
+    if (read(file, &temp_high, 1) != 1) {
+        std::cerr << "Failed to read from the i2c bus" << std::endl;
+        close(file);
+    }
+
+    // Read the low 8 bits of temperature data
+    if (write(file, &TEMP_LOW_REG, 1) != 1) {
+        std::cerr << "Failed to write to the i2c bus" << std::endl;
+        close(file);
+    }
+    unsigned char temp_low;
+    if (read(file, &temp_low, 1) != 1) {
+        std::cerr << "Failed to read from the i2c bus" << std::endl;
+        close(file);
+    }
+
+    // Combine the high 8 bits and low 8 bits of data
+    unsigned short temp_raw = (temp_high << 8) | temp_low;
+
+    // Here is the assumed temperature data conversion formula, which needs to be adjusted according to the sensor manual
+    float temperature = (float) temp_raw / 100.0;
+
+    // std::cout << "Temperature: " << temperature << " 掳C" << std::endl;
+
+    return temperature;
+}
 
 
 
