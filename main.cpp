@@ -93,7 +93,23 @@ int main(void) {
         std::string json = "{\"target\": " + std::to_string(setpoint) + "}";
         res.set_content(json, "application/json");
     });
+// targetTemperature
+    svr.Post("/api/targetTemperature", [](const httplib::Request &req, httplib::Response &res) {
+        try {
+            auto json = nlohmann::json::parse(req.body);
+            setpoint = json["target"].get<double>();
+            res.set_content("Success", "text/plain");
+        } catch (const std::exception &e) {
+            res.status = 400;
+            res.set_content("Invalid request", "text/plain");
+        }
+    });
 
+    // Start the server and listen on all network interfaces at port 5000
+    svr.listen("0.0.0.0", 5000);
+
+    return 0;
+}
 
 
 
