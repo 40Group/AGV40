@@ -150,7 +150,7 @@ void initmeasureDistance() {
     gpioSetMode(ECHO_PIN, PI_INPUT);
 }
 
-// === 鍑芥暟锛歩nittemp ===
+//
 void inittemp() {
     // Open the I2C device file
     if ((file = open("/dev/i2c-1", O_RDWR)) < 0) {
@@ -164,7 +164,7 @@ void inittemp() {
     }
 }
 
-// === 鍑芥暟锛歡et_temp ===
+
 float get_temp() {
     // Read the high 8 bits of temperature data
     if (write(file, &TEMP_HIGH_REG, 1) != 1) {
@@ -199,7 +199,52 @@ float get_temp() {
     return temperature;
 }
 
+void setPWM_DutyCycle(int pin, double dutyCycle) {
+    if (dutyCycle < 0.0) {
+        dutyCycle = 0.0;
+    } else if (dutyCycle > 1.0) {
+        dutyCycle = 1.0;
+    }
 
+    // Convert the duty cycle from 0 - 1 to 0 - 1000
+    int pwmValue = static_cast<int>(dutyCycle * 1000);
+    gpioPWM(pin, pwmValue);
+}
+
+void cleanup() {
+    gpioPWM(PIN_17, 0);
+    gpioPWM(PIN_27, 0);
+    gpioTerminate();
+}
+
+float measureDistance() {
+    // Trigger the sensor
+    gpioWrite(TRIG_PIN, 0);
+    usleep(2);
+    gpioWrite(TRIG_PIN, 1);
+    usleep(10);
+    gpioWrite(TRIG_PIN, 0);
+
+    // Wait for the echo signal to start
+    uint32_t startTime;
+    while (gpioRead(ECHO_PIN) == 0) {
+        startTime = gpioTick();
+    }
+
+    // Wait for the echo signal to end
+    uint32_t endTime;
+    while (gpioRead(ECHO_PIN) == 1) {
+        endTime = gpioTick();
+    }
+
+    // Calculate the duration of the echo signal
+    uint32_t duration = endTime - startTime;
+
+    // Calculate the distance (unit: cm)
+    float distance = duration * 0.0343 / 2;
+
+    return distance;
+}
 
 
 
