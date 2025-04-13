@@ -401,7 +401,124 @@ void timer_handler(const boost::system::error_code & /*e*/,
                                   boost::asio::placeholders::error,
                                   timer));
 }
+// === 函数：capture_frames ===
+void capture_frames() {
+    // Open the serial port device
+    serialFd = open("/dev/ttyUSB0", O_RDWR | O_NOCTTY | O_NDELAY);
+    if (serialFd == -1) {
+        std::cerr << "Failed to open serial port device" << std::endl;
+    }
 
+    // Configure serial port parameters
+    struct termios options;
+    // Get the current serial port settings
+    tcgetattr(serialFd, &options);
+    // Set the input and output baud rates to 115200
+    cfsetispeed(&options, B115200);
+    cfsetospeed(&options, B115200);
+    // Enable local connection and receiving data
+    options.c_cflag |= (CLOCAL | CREAD);
+    // Disable parity checking
+    options.c_cflag &= ~PARENB;
+    // Use 1 stop bit
+    options.c_cflag &= ~CSTOPB;
+    // Clear the data bit setting
+    options.c_cflag &= ~CSIZE;
+    // Set the data bit to 8 bits
+    options.c_cflag |= CS8;
+    // Apply the new serial port settings
+    tcsetattr(serialFd, TCSANOW, &options);
+
+    if (!cap.isOpened()) {
+        std::cerr << "Failed to open camera" << std::endl;
+    }
+
+    try {
+        // Create an io_context object to handle asynchronous operations
+        boost::asio::io_context io_context;
+        // Create a steady_timer object, initially set to trigger after 30 milliseconds
+        boost::asio::steady_timer timer(io_context, boost::asio::chrono::milliseconds(30));
+
+        // Asynchronously wait for the timer to expire and call the timer_handler function
+        timer.async_wait(boost::bind(timer_handler,
+                                     boost::asio::placeholders::error,
+                                     &timer));
+        // Start the event loop to handle asynchronous operations
+        io_context.run();
+    } catch (std::exception &e) {
+        std::cerr << "Exception: " << e.what() << std::endl;
+    }
+}
+
+// === 函数：timer2_handler ===
+void timer2_handler(const boost::system::error_code & /*e*/,
+                    boost::asio::steady_timer *timer2) {
+    // PID controller parameters
+    double kp = 25;
+    double ki = 0;
+    double kd = 0;
+
+    // PID controller related variables
+    static double integral = 0;
+    static double previous_error = 0;
+
+    double temp = get_temp();
+
+    // Calculate the PID output
+    double error = setpoint - temp;
+    integral += error;
+    double derivative = error - previous_error;
+    double pid_output = kp * error + ki * integral + kd * derivative;
+    previous_error = error;
+
+    if (std::abs(error) <= 0.4) {
+        // If the error is within the range, reset the integral term to avoid integral accumulation
+        integral = 0.0;
+        previous_error = 0.0;
+    }else {
+        // Control the cooling plate or heating plate according to the PID output
+        if (pid_output > 0) {
+            // Heating
+            double dutyCycle = std::min(1.0, std::max(0.0, pid_output));
+            setPWM_DutyCycle(27, dutyCycle);
+            setPWM_DutyCycle(17, 0.0); // Turn off the cooling plate
+        } else {
+            // Cooling
+            double dutyCycle = std::min(1.0, std::max(0.0, -pid_output));
+            setPWM_DutyCycle(17, dutyCycle);
+            setPWM_DutyCycle(27, 0.0); // Turn off the heating plate
+        }
+    }
+
+
+
+
+    // Reset the timer to trigger again after 200 milliseconds
+    timer2->expires_at(timer2->expiry() + boost::asio::chrono::milliseconds(200));
+    // Asynchronously wait for the timer to expire and call the timer_handler function
+    timer2->async_wait(boost::bind(timer2_handler,
+                                   boost::asio::placeholders::error,
+                                   timer2));
+}
+
+// === 函数：temp_control ===
+void temp_control() {
+    try {
+        // Create an io_context object to handle asynchronous operations
+        boost::asio::io_context io_context1;
+        // Create a steady_timer object, initially set to trigger after 200 milliseconds
+        boost::asio::steady_timer timer2(io_context1, boost::asio::chrono::milliseconds(200));
+
+        // Asynchronously wait for the timer to expire and call the timer_handler function
+        timer2.async_wait(boost::bind(timer2_handler,
+                                      boost::asio::placeholders::error,
+                                      &timer2));
+        // Start the event loop to handle asynchronous operations
+        io_context1.run();
+    } catch (std::exception &e) {
+        std::cerr << "Exception: " << e.what() << std::endl;
+    }
+}
 
 
 
