@@ -279,7 +279,23 @@ void car_stop() {
 }
 
 
+void car_turn_left() {
+    const char *message1 = "{#010P1000T0000!}";
+    // Write the message to the serial port
+    ssize_t bytesWritten = write(serialFd, message1, strlen(message1));
+    if (bytesWritten == -1) {
+        std::cerr << "Failed to send message via serial port" << std::endl;
+    }
+}
 
+void car_turn_right() {
+    const char *message1 = "{#010P2000T0000!}";
+    // Write the message to the serial port
+    ssize_t bytesWritten = write(serialFd, message1, strlen(message1));
+    if (bytesWritten == -1) {
+        std::cerr << "Failed to send message via serial port" << std::endl;
+    }
+}
 
 
 
