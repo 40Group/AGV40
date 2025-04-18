@@ -24,17 +24,7 @@
 
 
 // Yixuan Ding
-#include <fstream>
-#include <iostream>
-#include <thread>
-#include <opencv2/opencv.hpp>
-#include "libs/httplib.h"
-#include "libs/json.hpp"
-#include <termios.h>
-#include <boost/asio.hpp>
-#include <boost/bind/bind.hpp>
-#include <pigpio.h>
-#include <linux/i2c-dev.h>
+
 
 // I2C address of the slave device
 #define I2C_ADDR 0x5b
@@ -125,6 +115,14 @@ void initmeasureDistance() {
     gpioSetMode(ECHO_PIN, PI_INPUT);
 }
 
+// This function is used to remove the first n elements from a char[] array
+void removeFirstNChars(char arr[], size_t arrSize, size_t n) {
+    // Move the following elements forward by n positions
+    for (size_t i = 0; i < arrSize - n; ++i) {
+        arr[i] = arr[i + n];
+    }
+}
+
 //
 void inittemp() {
     // Open the I2C device file
@@ -172,6 +170,15 @@ float get_temp() {
     // std::cout << "Temperature: " << temperature << " 掳C" << std::endl;
 
     return temperature;
+}
+
+void init() {
+    if (gpioInitialise() < 0) {
+        std::cerr << "Failed to initialize pigpio library." << std::endl;
+    }
+    initPWM();
+    initmeasureDistance();
+    inittemp();
 }
 
 void setPWM_DutyCycle(int pin, double dutyCycle) {
