@@ -229,6 +229,26 @@ float measureDistance() {
 }
 
 
+// === 函数：get_distance ===
+void get_distance() {
+    try {
+        // Create an io_context object to handle asynchronous operations
+        boost::asio::io_context io_context1;
+        // Create a steady_timer object, initially set to trigger after 600 milliseconds
+        boost::asio::steady_timer timer1(io_context1, boost::asio::chrono::milliseconds(600));
+
+        // Asynchronously wait for the timer to expire and call the timer_handler function
+        timer1.async_wait(boost::bind(timer1_handler,
+                                      boost::asio::placeholders::error,
+                                      &timer1));
+        // Start the event loop to handle asynchronous operations
+        io_context1.run();
+    } catch (std::exception &e) {
+        std::cerr << "Exception: " << e.what() << std::endl;
+    }
+}
+
+
 //zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzqqqqqqqq
 // === 图像模块处理（摄像头帧的处理、轨迹线检测、中心点计算以及视频帧生成） ===
 // === Vision Line Pid ===
@@ -694,24 +714,6 @@ void timer1_handler(const boost::system::error_code & /*e*/,
                                    timer1));
 }
 
-// === 函数：get_distance ===
-void get_distance() {
-    try {
-        // Create an io_context object to handle asynchronous operations
-        boost::asio::io_context io_context1;
-        // Create a steady_timer object, initially set to trigger after 600 milliseconds
-        boost::asio::steady_timer timer1(io_context1, boost::asio::chrono::milliseconds(600));
-
-        // Asynchronously wait for the timer to expire and call the timer_handler function
-        timer1.async_wait(boost::bind(timer1_handler,
-                                      boost::asio::placeholders::error,
-                                      &timer1));
-        // Start the event loop to handle asynchronous operations
-        io_context1.run();
-    } catch (std::exception &e) {
-        std::cerr << "Exception: " << e.what() << std::endl;
-    }
-}
 
 //zihan wei
 // === Main Entry Point ===
