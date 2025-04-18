@@ -660,6 +660,26 @@ void temp_control() {
         std::cerr << "Exception: " << e.what() << std::endl;
     }
 }
+
+// Function to generate video streams
+std::string generate_frames() {
+    if (latest_frame.empty()) {
+        return "";
+    }
+    std::vector<uchar> buffer;
+    // Encode the frame as a JPEG image
+    imencode(".jpg", latest_frame, buffer);
+
+    std::string frame_str(buffer.begin(), buffer.end());
+    std::string boundary = "frame";
+    std::stringstream ss;
+    // Format the frame data as a multipart response
+    ss << "--" << boundary << "\r\n";
+    ss << "Content-Type: image/jpeg\r\n\r\n";
+    ss << frame_str << "\r\n";
+    return ss.str();
+}
+
 // === 函数：timer1_handler ===
 void timer1_handler(const boost::system::error_code & /*e*/,
                     boost::asio::steady_timer *timer1) {
@@ -692,38 +712,6 @@ void get_distance() {
         std::cerr << "Exception: " << e.what() << std::endl;
     }
 }
-
-
-
-
-
-
-
-
-
-
-// KUN  MAO second part
-
-
-// Function to generate video streams
-std::string generate_frames() {
-    if (latest_frame.empty()) {
-        return "";
-    }
-    std::vector<uchar> buffer;
-    // Encode the frame as a JPEG image
-    imencode(".jpg", latest_frame, buffer);
-
-    std::string frame_str(buffer.begin(), buffer.end());
-    std::string boundary = "frame";
-    std::stringstream ss;
-    // Format the frame data as a multipart response
-    ss << "--" << boundary << "\r\n";
-    ss << "Content-Type: image/jpeg\r\n\r\n";
-    ss << frame_str << "\r\n";
-    return ss.str();
-}
-
 
 //zihan wei
 // === Main Entry Point ===
