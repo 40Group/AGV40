@@ -11,107 +11,6 @@
 #include <linux/i2c-dev.h>
 
 
-//zihan wei
-// === Main Entry Point ===
-
-int main(void) {
-    init();
-
-    // Start the thread to capture camera frames
-    std::thread capture_thread(capture_frames);
-    // Detach the thread so that it can run independently
-    capture_thread.detach();
-
-    std::thread temp_control_thread(temp_control);
-    temp_control_thread.detach();
-
-    std::thread distance_thread(get_distance);
-    distance_thread.detach();
- Server svr;
-
-    svr.set_base_dir("/home/pi/program/dist");
-
-    svr.Get("/", [](const Request &req, Response &res) {
-        try {
-            std::ifstream file("/home/pi/program/dist/index.html");
-            if (file.is_open()) {
-                std::stringstream buffer;
-                buffer << file.rdbuf();
-                std::string content = buffer.str();
-                res.set_content(content, "text/html");
-            } else {
-                res.status = 404;
-                res.set_content("File not found", "text/plain");
-            }
-        } catch (...) {
-            res.status = 500;
-            res.set_content("Internal server error", "text/plain");
-        }
-    });
-    // Define a route to handle video stream requests
-    svr.Get("/video_feed", [](const Request &req, Response &res) {
-        res.set_content(generate_frames(), "multipart/x-mixed-replace; boundary=frame");
-    });
- // New route to receive the switch status sent from the front - end
-    svr.Post("/api/curtainSwitch", [](const Request &req, Response &res) {
-        try {
-            // Parse the JSON data from the request body
-            auto json = nlohmann::json::parse(req.body);
-            // Update the running status of the car
-            carRunStatus = json["status"];
-            std::cout << "Modified status: " << carRunStatus << std::endl;
-            res.set_content("Success", "text/plain");
-        } catch (...) {
-            res.set_content("Error", "text/plain");
-        }
-    });
-// Define a route to handle video stream requests
-    svr.Get("/video_feed", [](const Request &req, Response &res) {
-        res.set_content(generate_frames(), "multipart/x-mixed-replace; boundary=frame");
-    });
-// New route to receive the switch status sent from the front - end
-    svr.Post("/api/curtainSwitch", [](const Request &req, Response &res) {
-        try {
-            // Parse the JSON data from the request body
-            auto json = nlohmann::json::parse(req.body);
-            // Update the running status of the car
-            carRunStatus = json["status"];
-            std::cout << "Modified status: " << carRunStatus << std::endl;
-            res.set_content("Success", "text/plain");
-        } catch (...) {
-            res.set_content("Error", "text/plain");
-        }
-    });
-// temperature
-    svr.Get("/api/temperature", [](const httplib::Request &, httplib::Response &res) {
-        double temperature = get_temp();
-        std::string json = "{\"temperature\": " + std::to_string(temperature) + "}";
-        res.set_content(json, "application/json");
-    });
-
-    svr.Get("/api/targetTemperature", [](const httplib::Request &, httplib::Response &res) {
-        std::string json = "{\"target\": " + std::to_string(setpoint) + "}";
-        res.set_content(json, "application/json");
-    });
-// targetTemperature
-    svr.Post("/api/targetTemperature", [](const httplib::Request &req, httplib::Response &res) {
-        try {
-            auto json = nlohmann::json::parse(req.body);
-            setpoint = json["target"].get<double>();
-            res.set_content("Success", "text/plain");
-        } catch (const std::exception &e) {
-            res.status = 400;
-            res.set_content("Invalid request", "text/plain");
-        }
-    });
-
-    // Start the server and listen on all network interfaces at port 5000
-    svr.listen("0.0.0.0", 5000);
-
-    return 0;
-}
-
-
 
 
 
@@ -742,6 +641,106 @@ std::string generate_frames() {
     return ss.str();
 }
 
+
+//zihan wei
+// === Main Entry Point ===
+
+int main(void) {
+    init();
+
+    // Start the thread to capture camera frames
+    std::thread capture_thread(capture_frames);
+    // Detach the thread so that it can run independently
+    capture_thread.detach();
+
+    std::thread temp_control_thread(temp_control);
+    temp_control_thread.detach();
+
+    std::thread distance_thread(get_distance);
+    distance_thread.detach();
+ Server svr;
+
+    svr.set_base_dir("/home/pi/program/dist");
+
+    svr.Get("/", [](const Request &req, Response &res) {
+        try {
+            std::ifstream file("/home/pi/program/dist/index.html");
+            if (file.is_open()) {
+                std::stringstream buffer;
+                buffer << file.rdbuf();
+                std::string content = buffer.str();
+                res.set_content(content, "text/html");
+            } else {
+                res.status = 404;
+                res.set_content("File not found", "text/plain");
+            }
+        } catch (...) {
+            res.status = 500;
+            res.set_content("Internal server error", "text/plain");
+        }
+    });
+    // Define a route to handle video stream requests
+    svr.Get("/video_feed", [](const Request &req, Response &res) {
+        res.set_content(generate_frames(), "multipart/x-mixed-replace; boundary=frame");
+    });
+ // New route to receive the switch status sent from the front - end
+    svr.Post("/api/curtainSwitch", [](const Request &req, Response &res) {
+        try {
+            // Parse the JSON data from the request body
+            auto json = nlohmann::json::parse(req.body);
+            // Update the running status of the car
+            carRunStatus = json["status"];
+            std::cout << "Modified status: " << carRunStatus << std::endl;
+            res.set_content("Success", "text/plain");
+        } catch (...) {
+            res.set_content("Error", "text/plain");
+        }
+    });
+// Define a route to handle video stream requests
+    svr.Get("/video_feed", [](const Request &req, Response &res) {
+        res.set_content(generate_frames(), "multipart/x-mixed-replace; boundary=frame");
+    });
+// New route to receive the switch status sent from the front - end
+    svr.Post("/api/curtainSwitch", [](const Request &req, Response &res) {
+        try {
+            // Parse the JSON data from the request body
+            auto json = nlohmann::json::parse(req.body);
+            // Update the running status of the car
+            carRunStatus = json["status"];
+            std::cout << "Modified status: " << carRunStatus << std::endl;
+            res.set_content("Success", "text/plain");
+        } catch (...) {
+            res.set_content("Error", "text/plain");
+        }
+    });
+// temperature
+    svr.Get("/api/temperature", [](const httplib::Request &, httplib::Response &res) {
+        double temperature = get_temp();
+        std::string json = "{\"temperature\": " + std::to_string(temperature) + "}";
+        res.set_content(json, "application/json");
+    });
+
+    svr.Get("/api/targetTemperature", [](const httplib::Request &, httplib::Response &res) {
+        std::string json = "{\"target\": " + std::to_string(setpoint) + "}";
+        res.set_content(json, "application/json");
+    });
+// targetTemperature
+    svr.Post("/api/targetTemperature", [](const httplib::Request &req, httplib::Response &res) {
+        try {
+            auto json = nlohmann::json::parse(req.body);
+            setpoint = json["target"].get<double>();
+            res.set_content("Success", "text/plain");
+        } catch (const std::exception &e) {
+            res.status = 400;
+            res.set_content("Invalid request", "text/plain");
+        }
+    });
+
+    // Start the server and listen on all network interfaces at port 5000
+    svr.listen("0.0.0.0", 5000);
+
+    return 0;
+}
 
 
 
