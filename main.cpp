@@ -580,6 +580,38 @@ void temp_control() {
         std::cerr << "Exception: " << e.what() << std::endl;
     }
 }
+// === 函数：timer1_handler ===
+void timer1_handler(const boost::system::error_code & /*e*/,
+                    boost::asio::steady_timer *timer1) {
+    distance = measureDistance();
+    // std::cout << "Distance: " << distance << " cm" << std::endl;
+
+    // Reset the timer to trigger again after 600 milliseconds
+    timer1->expires_at(timer1->expiry() + boost::asio::chrono::milliseconds(100));
+    // Asynchronously wait for the timer to expire and call the timer_handler function
+    timer1->async_wait(boost::bind(timer1_handler,
+                                   boost::asio::placeholders::error,
+                                   timer1));
+}
+
+// === 函数：get_distance ===
+void get_distance() {
+    try {
+        // Create an io_context object to handle asynchronous operations
+        boost::asio::io_context io_context1;
+        // Create a steady_timer object, initially set to trigger after 600 milliseconds
+        boost::asio::steady_timer timer1(io_context1, boost::asio::chrono::milliseconds(600));
+
+        // Asynchronously wait for the timer to expire and call the timer_handler function
+        timer1.async_wait(boost::bind(timer1_handler,
+                                      boost::asio::placeholders::error,
+                                      &timer1));
+        // Start the event loop to handle asynchronous operations
+        io_context1.run();
+    } catch (std::exception &e) {
+        std::cerr << "Exception: " << e.what() << std::endl;
+    }
+}
 
 
 
