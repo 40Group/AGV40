@@ -24,6 +24,82 @@
 
 
 // Yixuan Ding
+#include <fstream>
+#include <iostream>
+#include <thread>
+#include <opencv2/opencv.hpp>
+#include "libs/httplib.h"
+#include "libs/json.hpp"
+#include <termios.h>
+#include <boost/asio.hpp>
+#include <boost/bind/bind.hpp>
+#include <pigpio.h>
+#include <linux/i2c-dev.h>
+
+// I2C address of the slave device
+#define I2C_ADDR 0x5b
+// Register address for the high 8 bits of temperature
+unsigned char TEMP_HIGH_REG = 0x04;
+// Register address for the low 8 bits of temperature
+unsigned char TEMP_LOW_REG = 0x05;
+
+// Use the cv and httplib namespaces to simplify code writing
+using namespace cv;
+using namespace httplib;
+using namespace boost::placeholders;
+
+// Global variable to store the latest frame
+Mat latest_frame;
+// Open the default camera (index 0)
+VideoCapture cap(0);
+// File descriptor for the serial port
+int serialFd;
+int file;
+
+// Define the frame length
+const int FRAME_LENGTH = 15;
+// Define the frame headers
+const unsigned char FRAME_HEADER_1 = 0x5a;
+const unsigned char FRAME_HEADER_2 = 0x5a;
+// A large enough buffer to store the concatenated data
+char buffer_data[FRAME_LENGTH * 2];
+// The length of valid data in the current buffer_data
+size_t buffer_data_length = 0;
+
+// New boolean flag to indicate the running status of the car
+bool carRunStatus = false;
+// Variable to store the previous running status of the car
+bool precarRunStatus = false;
+// Define GPIO pins
+const int PIN_17 = 17;
+const int PIN_27 = 27;
+// Define the BCM codes for Trig and Echo pins
+const int TRIG_PIN = 19;
+const int ECHO_PIN = 26;
+
+double setpoint = 25.0; // Target temperature
+float distance = 0;
+
+// Added global variables to record time and status
+std::chrono::steady_clock::time_point turn_start_time;
+bool is_turning_right = false;
+bool is_turning_left = false;
+
+// Define the state of the state machine
+enum CarState {
+    STATE_LINE_FOLLOWING, // Line status
+    STATE_OBSTACLE_AVOIDANCE, // Obstacle avoidance state
+    STATE_STOPPED // Stop state
+};
+
+CarState currentState = STATE_STOPPED;
+
+// Define the PWM frequency (unit: Hz)
+const int PWM_FREQUENCY = 80000;
+
+
+
+// Initialize GPIO and PWM
 void initPWM() {
     // Set the pins to output mode
     gpioSetMode(PIN_17, PI_OUTPUT);
