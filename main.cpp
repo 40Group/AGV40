@@ -167,7 +167,7 @@ float get_temp() {
     // Here is the assumed temperature data conversion formula, which needs to be adjusted according to the sensor manual
     float temperature = (float) temp_raw / 100.0;
 
-    // std::cout << "Temperature: " << temperature << " 掳C" << std::endl;
+    // std::cout << "Temperature: " << temperature << " °C" << std::endl;
 
     return temperature;
 }
