@@ -137,41 +137,6 @@ void inittemp() {
     }
 }
 
-
-float get_temp() {
-    // Read the high 8 bits of temperature data
-    if (write(file, &TEMP_HIGH_REG, 1) != 1) {
-        std::cerr << "Failed to write to the i2c bus" << std::endl;
-        close(file);
-    }
-    unsigned char temp_high;
-    if (read(file, &temp_high, 1) != 1) {
-        std::cerr << "Failed to read from the i2c bus" << std::endl;
-        close(file);
-    }
-
-    // Read the low 8 bits of temperature data
-    if (write(file, &TEMP_LOW_REG, 1) != 1) {
-        std::cerr << "Failed to write to the i2c bus" << std::endl;
-        close(file);
-    }
-    unsigned char temp_low;
-    if (read(file, &temp_low, 1) != 1) {
-        std::cerr << "Failed to read from the i2c bus" << std::endl;
-        close(file);
-    }
-
-    // Combine the high 8 bits and low 8 bits of data
-    unsigned short temp_raw = (temp_high << 8) | temp_low;
-
-    // Here is the assumed temperature data conversion formula, which needs to be adjusted according to the sensor manual
-    float temperature = (float) temp_raw / 100.0;
-
-    // std::cout << "Temperature: " << temperature << " °C" << std::endl;
-
-    return temperature;
-}
-
 void init() {
     if (gpioInitialise() < 0) {
         std::cerr << "Failed to initialize pigpio library." << std::endl;
@@ -625,6 +590,40 @@ void capture_frames() {
     } catch (std::exception &e) {
         std::cerr << "Exception: " << e.what() << std::endl;
     }
+}
+
+float get_temp() {
+    // Read the high 8 bits of temperature data
+    if (write(file, &TEMP_HIGH_REG, 1) != 1) {
+        std::cerr << "Failed to write to the i2c bus" << std::endl;
+        close(file);
+    }
+    unsigned char temp_high;
+    if (read(file, &temp_high, 1) != 1) {
+        std::cerr << "Failed to read from the i2c bus" << std::endl;
+        close(file);
+    }
+
+    // Read the low 8 bits of temperature data
+    if (write(file, &TEMP_LOW_REG, 1) != 1) {
+        std::cerr << "Failed to write to the i2c bus" << std::endl;
+        close(file);
+    }
+    unsigned char temp_low;
+    if (read(file, &temp_low, 1) != 1) {
+        std::cerr << "Failed to read from the i2c bus" << std::endl;
+        close(file);
+    }
+
+    // Combine the high 8 bits and low 8 bits of data
+    unsigned short temp_raw = (temp_high << 8) | temp_low;
+
+    // Here is the assumed temperature data conversion formula, which needs to be adjusted according to the sensor manual
+    float temperature = (float) temp_raw / 100.0;
+
+    // std::cout << "Temperature: " << temperature << " °C" << std::endl;
+
+    return temperature;
 }
 
 // === 函数：timer2_handler ===
