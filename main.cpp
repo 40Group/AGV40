@@ -229,6 +229,22 @@ float measureDistance() {
 }
 
 
+
+// === 函数：timer1_handler ===
+void timer1_handler(const boost::system::error_code & /*e*/,
+                    boost::asio::steady_timer *timer1) {
+    distance = measureDistance();
+    // std::cout << "Distance: " << distance << " cm" << std::endl;
+
+    // Reset the timer to trigger again after 600 milliseconds
+    timer1->expires_at(timer1->expiry() + boost::asio::chrono::milliseconds(100));
+    // Asynchronously wait for the timer to expire and call the timer_handler function
+    timer1->async_wait(boost::bind(timer1_handler,
+                                   boost::asio::placeholders::error,
+                                   timer1));
+}
+
+
 // === 函数：get_distance ===
 void get_distance() {
     try {
@@ -700,19 +716,6 @@ std::string generate_frames() {
     return ss.str();
 }
 
-// === 函数：timer1_handler ===
-void timer1_handler(const boost::system::error_code & /*e*/,
-                    boost::asio::steady_timer *timer1) {
-    distance = measureDistance();
-    // std::cout << "Distance: " << distance << " cm" << std::endl;
-
-    // Reset the timer to trigger again after 600 milliseconds
-    timer1->expires_at(timer1->expiry() + boost::asio::chrono::milliseconds(100));
-    // Asynchronously wait for the timer to expire and call the timer_handler function
-    timer1->async_wait(boost::bind(timer1_handler,
-                                   boost::asio::placeholders::error,
-                                   timer1));
-}
 
 
 //zihan wei
