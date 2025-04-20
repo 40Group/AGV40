@@ -10,18 +10,7 @@
 #include <opencv2/opencv.hpp>
 #include <linux/i2c-dev.h>
 
-
-
-
-
-
-
-
-
-
-
 // === Hardware Gpio Temp ===
-
 
 // Yixuan Ding
 
@@ -331,9 +320,6 @@ void drawCenterlineOnColorImage(cv::Mat &colorImage, const std::vector<cv::Point
 //zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzqqqqqqqqqqqqqqqqq
 
 
-
-
-
 //KUN MAO first part
 
 // === Car Control ===
@@ -377,13 +363,6 @@ void car_turn_right() {
         std::cerr << "Failed to send message via serial port" << std::endl;
     }
 }
-
-
-
-
-
-
-
 
 
 //YANSHI WANG
@@ -816,12 +795,6 @@ int main(void) {
 
     return 0;
 }
-
-
-
-
-
-
 
 
 
