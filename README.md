@@ -55,4 +55,4 @@ The ESP32 controls motors, servos, temperature logic and communicates with senso
 
 ！[image](images/top_view.png)
 
-!.[image].(blob:https://github.com/7bf73d26-f4f4-41f2-a9b6-82559d8d12e4)
+!.[image].(https://github.com/40Group/AGV40/blob/main/%E7%94%B5%E8%B7%AF.png)
