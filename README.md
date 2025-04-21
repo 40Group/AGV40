@@ -27,7 +27,7 @@ Multithreading + asynchronous framework
 ·Static resources: front-end HTML/JS/CSS
 
 ## 3.2 Logical Flow
-
+![Logical Flow](Images/Logical%20Flow.png)
 Figure3: flow chart
 
 ## 4. System functions and implementation
