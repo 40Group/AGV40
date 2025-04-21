@@ -1,64 +1,19 @@
-# Intelligent Tracking and Obstacle Avoidance Vehicle with Temperature Control
+# 
+# Introduction
+With the rise of smart healthcare and intelligent hospitals, Automated Guided Vehicles (AGVs) have become a key part of modern medical logistics. Traditional manual transport is inefficient and error-prone, while AGVs enable the automatic and precise delivery of items such as medications, samples, and meals, easing staff workload and improving efficiency. To operate effectively in hospital environments, AGVs must ensure stable navigation, real-time obstacle avoidance, and temperature control. They often rely on black line tracking for navigation, ultrasonic sensors for safety, and onboard temperature regulation to protect sensitive medical items like vaccines or specimens.
 
-A Raspberry Pi-based smart vehicle system designed for automated delivery in medical environments. It features visual line tracking, ultrasonic obstacle detection, temperature regulation, and real-time web-based control.
+This project presents the design and implementation of a Raspberry Pi-based intelligent vehicle control system tailored to medical AGV applications. The system is developed in C++ and integrates multiple functionalities including line following, ultrasonic obstacle avoidance, temperature monitoring and control, and lightweight web-based communication. OpenCV is used for real-time image acquisition and processing, while the path center is extracted using image moment calculations. A proportional control algorithm dynamically adjusts the servo angle, enabling the vehicle to follow a black line with high precision. An ultrasonic distance sensor, connected via GPIO, allows the system to detect obstacles in front of the vehicle and initiate appropriate avoidance maneuvers to prevent collisions. For temperature-sensitive transport, the system incorporates an I2C-based digital temperature sensor and uses a PID algorithm to control a cooling or heating module via PWM signals, ensuring stable cargo temperatures. On the communication side, an embedded HTTP server provides a live video stream and RESTful APIs, allowing users to monitor the vehicle’s status, adjust parameters, and control operation remotely through a browser interface.
 
----
+# Hardware and Component Selection
+![Table 1](Images/Table1.png)
 
-## 📸 Appearance
+![Table 2](Images/Table%202.png)
 
-![Custom-designed 3D printed shell](./images/shell.png)  
-*Figure 1: Custom-designed 3D printed shell*
+![Raspberry Pi 4B](Images/Raspberry%20Pi%204B.png)
+Figure1: Raspberry Pi 4B+ main control board
+![ESP32](Images/ESP%2032.jpg)
+Figure2: ESP core board
 
----
+#  System overall structure and operation logic
 
-## 🔧 Features
-
-- **Real-time Video Transmission**  
-  View the USB camera feed in real time via browser. Equipped with a high-resolution lens and stable MJPEG streaming.
-
-- **Webpage Remote Control**  
-  Control the vehicle via webpage (start/stop/steering).
-
-- **Personnel Detection Support**  
-  I2C-based deep-learning-ready external module for personnel detection (optional).
-
----
-
-## 🧱 Project Structure
-
-The system is composed of multiple concurrent modules using C++ multithreading and Boost.Asio asynchronous timers.
-
-### 1. Hardware Control Module (STM32)
-
-This serves as the lower control layer of the vehicle, handling posture sensing, OLED display, self-balancing, button detection, etc.
-
-![STM32 Board](./images/stm32.png)
-
----
-
-### 2. Overall Architecture
-
-- **capture_frames()**  
-  Vision + tracking + state machine logic (30ms interval)
-
-- **get_distance()**  
-  Ultrasonic ranging, updates global `distance` variable (100ms interval)
-
-- **temp_control()**  
-  Temperature PID control and Peltier management (200ms interval)
-
-- **HTTP Server**  
-  Based on `cpp-httplib` for video streaming + JSON API control
-
-```mermaid
-flowchart TD
-    A[Start Initialization] --> B[Start 3 Threads]
-    B --> C[Capture Frames]
-    B --> D[Distance Measure]
-    B --> E[Temperature PID Control]
-    C --> F[State Machine: Tracking or Avoidance]
-    F -->|Obstacle| G[Right Turn]
-    G --> H[Left Turn]
-    F -->|Line Detected| I[Calculate Deviation → PWM Output]
-    E --> J[Read Temp via I2C → PID → Peltier/Fan]
 
