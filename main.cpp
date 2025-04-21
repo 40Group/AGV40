@@ -320,7 +320,7 @@ void drawCenterlineOnColorImage(cv::Mat &colorImage, const std::vector<cv::Point
 //zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzqqqqqqqqqqqqqqqqq
 
 
-//KUN MAO first part
+//KUN MAO
 
 // === Car Control ===
 
