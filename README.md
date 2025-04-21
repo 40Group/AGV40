@@ -15,11 +15,17 @@ Figure2: ESP core board
 # 3. System overall structure and operation logic
 # 3.1 Software Architecture
 Multithreading + asynchronous framework
+
 ·capture_frames(): responsible for the main logic of servo/tracking/obstacle avoidance, timing (30ms) trigger processing
+
 ·get_distance(): Ultrasonic distance measurement, timed (100ms) to update the global variable distance
+
 ·temp_control(): PID temperature control, timing (200ms) to drive Peltier and cooling fan
+
 ·HTTP Server (cpp-httplib)
+
 ·Static resources: front-end HTML/JS/CSS
+
 # 3.2 Logical Flow
 ![Table 2](Images/Table%202.png)
 Figure3: flow chart
@@ -29,8 +35,11 @@ Figure3: flow chart
 The vehicle forward, stop, left turn, right turn four functions:
 
 1）Forward section: This function enables the cart to run in a forward state. By controlling the angle direction of the servos of the two wheels, the wheels are rotated in different directions to realize forward running. The servo #008 is set to 2000 and #009 is set to 1000, and the left and right wheels are driven at different speeds to form a straightforward effect.
+
 2）Stop section: This function controls the stopping of the vehicle. Servo #008 and #009 are simultaneously set to the neutral position 1500, which represents no torque output from the servo (i.e., the motor is stationary), thus stopping the wheels from rotating and the vehicle from moving.
+
 3）Left turn: This function controls the steering servo to turn the vehicle to the left. Servo number #010 is set to 1000, which corresponds to a left-handed steering angle. This servo is typically connected to the steering wheel system or steering bridge mechanism and serves to control the angle of rotation of the front wheels.
+
 4）Right turn: This function sets servo #010 to position 2000 to turn the car to the right. This is the opposite of car_turn_left(). By adjusting the servo control signal, precise directional control can be realized.
 
 The control command string is sent to the servo controller via the serial port (serialFd), and once successfully transmitted, the servo executes the corresponding action immediately.
