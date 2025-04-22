@@ -68,7 +68,7 @@ This module is centered around the image moment method. The getLineCenter functi
 ## 4.4 Ultrasonic ranging
 This module uses an HC-SR04 ultrasonic sensor to measure the distance between the smart car and nearby obstacles. It calculates the time-of-flight of an ultrasonic pulse using GPIO pins, and periodically updates the distance reading using Boost.Asio's asynchronous timer, without blocking the main thread.
 
-1) How It Works (Principle)
+1）How It Works (Principle)
 Pulse Triggering:
 An ultrasonic sensor (such as HC-SR04) emits a high-frequency sound wave using a brief electrical pulse.
 
