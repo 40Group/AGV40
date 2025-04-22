@@ -11,6 +11,9 @@ This project presents the design and implementation of a Raspberry Pi-based inte
   <img src="Images/Raspberry%20Pi%204B.png" width="400"/>
 </p>
 Figure1: Raspberry Pi 4B+ main control board
+<p align="center">
+Figure1: Raspberry Pi 4B+ main control board
+</p>
 
 <p align="center">
   <img src="Images/ESP%2032.jpg" width="400"/>
