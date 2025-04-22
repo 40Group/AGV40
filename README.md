@@ -32,7 +32,6 @@ Multithreading + asynchronous framework
 ·Static resources: front-end HTML/JS/CSS
 
 ## 3.2 Logical Flow
-![Logical Flow](Images/Logical%20Flow.png)
 <p align="center">
   <img src="Images/Logical%20Flow.png" width="400"/>
 </p>
