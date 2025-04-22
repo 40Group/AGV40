@@ -7,10 +7,6 @@ This project presents the design and implementation of a Raspberry Pi-based inte
 ## 2. Hardware and Component Selection
 ![Table 1](Images/Table1.png)
 
-<p align="center">
-  <img src="Images/Table1.png" width="700"/>
-</p>
-
 ![Raspberry Pi 4B](Images/Raspberry%20Pi%204B.png)
 Figure1: Raspberry Pi 4B+ main control board
 ![ESP32](Images/ESP%2032.jpg)
@@ -33,6 +29,10 @@ Multithreading + asynchronous framework
 ## 3.2 Logical Flow
 ![Logical Flow](Images/Logical%20Flow.png)
 Figure3: flow chart
+
+<p align="center">
+  <img src="Images/Logical%20Flow.png" width="400"/>
+</p>
 
 ## 4. System functions and implementation
 ## 4.1 Vehicle operation
