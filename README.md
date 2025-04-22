@@ -11,14 +11,14 @@ This project presents the design and implementation of a Raspberry Pi-based inte
   <img src="Images/Raspberry%20Pi%204B.png" width="400"/>
 </p>
 <p align="center">
-Figure1: Raspberry Pi 4B+ main control board
+Figure 1: Raspberry Pi 4B+ main control board
 </p>
 
 <p align="center">
   <img src="Images/ESP%2032.jpg" width="400"/>
 </p>
 <p align="center">
-Figure2: ESP core board
+Figure 2: ESP core board
 </p>
 
 ## 3. System overall structure and operation logic
@@ -40,7 +40,7 @@ Multithreading + asynchronous framework
   <img src="Images/Logical%20Flow.png" width="400"/>
 </p>
 <p align="center">
-Figure3: flow chart
+Figure 3: flow chart
 </p>
 
 ## 4. System functions and implementation
