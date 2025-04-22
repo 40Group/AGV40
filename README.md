@@ -70,20 +70,32 @@ This module uses an HC-SR04 ultrasonic sensor to measure the distance between th
 
 1) How It Works (Principle)
 Pulse Triggering
+
 An ultrasonic sensor (such as HC-SR04) emits a high-frequency sound wave using a brief electrical pulse.
+
 Echo Reception
+
 The sound wave travels through the air, reflects off the nearest object, and returns to the sensor.
+
 Time-of-Flight Measurement
+
 The system records how long the echo took to return. This is known as the "time-of-flight."
+
 Distance Calculation
+
 Using the speed of sound (approximately 343 m/s), the system calculates the distance to the object with the formula:
 Distance (cm) = Time(μs) * 0.0343 / 2
+
 The division by 2 accounts for the round trip (forward and back).
 
 2）How It's Timed: Boost.Asio
+
 To keep the system efficient and non-blocking, a software timer is used:
+
 Boost.Asio (a C++ asynchronous I/O library) is used to create a timer that runs every 100 milliseconds.
+
 Every time the timer fires, the system automatically performs a new distance measurement.
+
 This happens in the background, allowing the rest of the system (like camera processing or motor control) to continue running smoothly.
 
 ## 4.5 Obstacle Avoidance
