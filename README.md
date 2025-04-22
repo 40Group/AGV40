@@ -12,6 +12,13 @@ Figure1: Raspberry Pi 4B+ main control board
 ![ESP32](Images/ESP%2032.jpg)
 Figure2: ESP core board
 
+<p align="center">
+  <img src="Images/ESP%2032.jpg" width="200"/>
+</p>
+<p align="center">
+  <img src="Images/Raspberry%20Pi%204B.png" width="200"/>
+</p>
+
 ## 3. System overall structure and operation logic
 ## 3.1 Software Architecture
 Multithreading + asynchronous framework
