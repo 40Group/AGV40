@@ -5,7 +5,7 @@ With the rise of smart healthcare and intelligent hospitals, Automated Guided Ve
 This project presents the design and implementation of a Raspberry Pi-based intelligent vehicle control system tailored to medical AGV applications. The system is developed in C++ and integrates multiple functionalities including line following, ultrasonic obstacle avoidance, temperature monitoring and control, and lightweight web-based communication. OpenCV is used for real-time image acquisition and processing, while the path center is extracted using image moment calculations. A proportional control algorithm dynamically adjusts the servo angle, enabling the vehicle to follow a black line with high precision. An ultrasonic distance sensor, connected via GPIO, allows the system to detect obstacles in front of the vehicle and initiate appropriate avoidance maneuvers to prevent collisions. For temperature-sensitive transport, the system incorporates an I2C-based digital temperature sensor and uses a PID algorithm to control a cooling or heating module via PWM signals, ensuring stable cargo temperatures. On the communication side, an embedded HTTP server provides a live video stream and RESTful APIs, allowing users to monitor the vehicle’s status, adjust parameters, and control operation remotely through a browser interface.
 
 <p align="center">
-  <img src="Images/AGV_Demo.gif" width="400">
+  <img src="Images/AGV_Demo.gif" width="360">
 </p>
 
 <p align="center">
@@ -19,14 +19,14 @@ Figure 1: Demo of AGV Model
   <img src="Images/Raspberry%20Pi%204B.png" width="400"/>
 </p>
 <p align="center">
-Figure 1: Raspberry Pi 4B+ main control board
+Figure 2: Raspberry Pi 4B+ main control board
 </p>
 
 <p align="center">
   <img src="Images/ESP%2032.jpg" width="400"/>
 </p>
 <p align="center">
-Figure 2: ESP core board
+Figure 3: ESP core board
 </p>
 
 ## 3. System overall structure and operation logic
@@ -48,7 +48,7 @@ Multithreading + asynchronous framework
   <img src="Images/Logical%20Flow.png" width="400"/>
 </p>
 <p align="center">
-Figure 3: flow chart
+Figure 4: flow chart
 </p>
 
 ## 4. System functions and implementation
