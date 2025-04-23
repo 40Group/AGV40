@@ -4,8 +4,13 @@ With the rise of smart healthcare and intelligent hospitals, Automated Guided Ve
 
 This project presents the design and implementation of a Raspberry Pi-based intelligent vehicle control system tailored to medical AGV applications. The system is developed in C++ and integrates multiple functionalities including line following, ultrasonic obstacle avoidance, temperature monitoring and control, and lightweight web-based communication. OpenCV is used for real-time image acquisition and processing, while the path center is extracted using image moment calculations. A proportional control algorithm dynamically adjusts the servo angle, enabling the vehicle to follow a black line with high precision. An ultrasonic distance sensor, connected via GPIO, allows the system to detect obstacles in front of the vehicle and initiate appropriate avoidance maneuvers to prevent collisions. For temperature-sensitive transport, the system incorporates an I2C-based digital temperature sensor and uses a PID algorithm to control a cooling or heating module via PWM signals, ensuring stable cargo temperatures. On the communication side, an embedded HTTP server provides a live video stream and RESTful APIs, allowing users to monitor the vehicle’s status, adjust parameters, and control operation remotely through a browser interface.
 
-![AGV Demo](Images/AGV_Demo.gif)
+<p align="center">
+  <img src="Images/AGV_Demo.gif" width="400">
+</p>
 
+<p align="center">
+Figure 1: Demo of AGV Model
+</p>
 
 ## 2. Hardware and Component Selection
 ![Table 1](Images/Table1.png)
