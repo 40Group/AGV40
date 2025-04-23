@@ -33,15 +33,15 @@ Figure 3: ESP core board
 ## 3.1 Software Architecture
 Multithreading + asynchronous framework
 
-·capture_frames(): responsible for the main logic of servo/tracking/obstacle avoidance, timing (30ms) trigger processing
+· capture_frames(): responsible for the main logic of servo/tracking/obstacle avoidance, timing (30ms) trigger processing
 
-·get_distance(): Ultrasonic distance measurement, timed (100ms) to update the global variable distance
+· get_distance(): Ultrasonic distance measurement, timed (100ms) to update the global variable distance
 
-·temp_control(): PID temperature control, timing (200ms) to drive Peltier and cooling fan
+· temp_control(): PID temperature control, timing (200ms) to drive Peltier and cooling fan
 
-·HTTP Server (cpp-httplib)
+· HTTP Server (cpp-httplib)
 
-·Static resources: front-end HTML/JS/CSS
+· Static resources: front-end HTML/JS/CSS
 
 ## 3.2 Logical Flow
 <p align="center">
@@ -135,6 +135,6 @@ In terms of temperature control, the system reads the ambient temperature throug
 In addition, the system has built a lightweight HTTP server that supports web page control and video streaming viewing, realizing convenient human-computer interaction. The overall architecture is based on multi-threaded design, using Boost.Asio asynchronous timer for non-blocking scheduling of tasks. Each module runs in parallel without interfering with each other, with good real-time performance and system stability.
 
 ## Follow us
-Ins @ha.nn6012 
+More info is available in Ins: @ha.nn6012 
 
-More info is available in Ins.
+If you are interested in our design, feel free to contact us!
