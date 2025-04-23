@@ -122,7 +122,7 @@ The route /api/temperature is a GET interface, which calls get_temp() to read th
 Finally, the server is started through svr.listen("0.0.0.0", 5000), listening to port 5000, supporting all devices in the LAN to access the control page and sensor data.
 
 <p align="center">
-  <img src="Images/Web front-end visualization and control.jpg" width="350" />
+  <img src="Images/Web front-end visualization and control.jpg" width="400" />
 </p>
 
 <p align="center">
