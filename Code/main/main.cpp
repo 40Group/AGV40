@@ -8,20 +8,20 @@
 #include "../include/TimerManager.h"
 #include <signal.h>
 #include <csignal>
-// 防护宏的作用就是防止头文件被重复包含！
-// 全局变量用于优雅退出
+// The function of the guard macro is to prevent header files from being included more than once!
+// Global variables for graceful exits
 std::atomic<bool> g_running(true);
 
-// 信号处理函数
+// signal processing function
 void signalHandler(int signal) {
     std::cout << "\nReceived signal " << signal << ", shutting down gracefully..." << std::endl;
     g_running = false;
 }
 
-// 智能小车主控制类
+// Intelligent small car main control class
 class SmartCarController {
 private:
-    // 系统组件
+    // System components
     std::unique_ptr<MotorController> motor_controller_;
     std::unique_ptr<VisionTracker> vision_tracker_;
     std::unique_ptr<UltrasonicSensor> ultrasonic_sensor_;
@@ -30,15 +30,15 @@ private:
     std::unique_ptr<SafetyController> safety_controller_;
     std::unique_ptr<TimerManager> timer_manager_;
     
-    // 控制线程
+    // Control thread
     std::thread main_control_thread_;
     std::thread safety_monitor_thread_;
     
-    // 控制状态
+    // control state
     std::atomic<bool> running_;
     std::atomic<bool> auto_mode_;
     
-    // 控制参数
+    // control parameter
     double max_speed_;
     double turn_sensitivity_;
     
@@ -54,7 +54,7 @@ public:
     bool initialize() {
         std::cout << "Initializing Smart Car System..." << std::endl;
         
-        // 创建所有组件
+        // Create all components
         motor_controller_ = std::make_unique<MotorController>();
         vision_tracker_ = std::make_unique<VisionTracker>();
         ultrasonic_sensor_ = std::make_unique<UltrasonicSensor>();
@@ -63,7 +63,7 @@ public:
         safety_controller_ = std::make_unique<SafetyController>();
         timer_manager_ = std::make_unique<TimerManager>();
         
-        // 初始化各个组件
+        // Initialize each component
         if (!motor_controller_->initialize()) {
             std::cerr << "Failed to initialize motor controller" << std::endl;
             return false;
@@ -94,7 +94,7 @@ public:
             return false;
         }
         
-        // 初始化安全控制器（需要所有其他组件）
+        // Initialize the safety controller (all other components are required)
         if (!safety_controller_->initialize(motor_controller_.get(), 
                                            ultrasonic_sensor_.get(),
                                            ir_sensor_.get(),
@@ -103,7 +103,7 @@ public:
             return false;
         }
         
-        // 设置温度目标
+        // Set the temperature target
         temp_controller_->setTargetTemperature(Constants::TARGET_TEMPERATURE);
         
         std::cout << "Smart Car System initialized successfully!" << std::endl;
@@ -113,7 +113,7 @@ public:
     void start() {
         running_ = true;
         
-        // 启动主控制线程
+        // Start the main control thread
         main_control_thread_ = std::thread(&SmartCarController::mainControlLoop, this);
         
         std::cout << "Smart Car started - Press Ctrl+C to stop" << std::endl;
@@ -124,12 +124,12 @@ public:
         
         running_ = false;
         
-        // 等待控制线程结束
+        // Waiting for the control thread to finish
         if (main_control_thread_.joinable()) {
             main_control_thread_.join();
         }
         
-        // 关闭所有组件（按相反顺序）
+        // Close all components (in reverse order)
         if (safety_controller_) safety_controller_->shutdown();
         if (timer_manager_) timer_manager_->shutdown();
         if (temp_controller_) temp_controller_->shutdown();
@@ -150,11 +150,11 @@ private:
                 if (auto_mode_.load()) {
                     autonomousControl();
                 } else {
-                    // 手动模式或停止模式
+                    // Manual mode or stop mode
                     motor_controller_->stop();
                 }
                 
-                // 显示状态信息
+                // Display status information
                 printSystemStatus();
                 
             } catch (const std::exception& e) {
@@ -163,45 +163,45 @@ private:
                 std::this_thread::sleep_for(std::chrono::seconds(1));
             }
             
-            // 控制循环频率约10Hz
+            // The control cycle frequency is approximately 10Hz
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
         }
         
-        // 退出时停止所有运动
+        // Stop all movements when exiting
         motor_controller_->stop();
         std::cout << "Main control loop ended" << std::endl;
     }
     
     void autonomousControl() {
-        // 检查安全状态
+        // Check the safety status
         if (!safety_controller_->isSafeToMove()) {
             motor_controller_->stop();
             return;
         }
         
-        // 获取视觉处理结果 - 事件驱动方式
+        // Obtain visual processing results - event-driven approach
         VisionResult vision_result = vision_tracker_->processFrame();
         
         MotorCommand command;
         
         if (vision_result.line_detected) {
-            // 基于视觉的循迹控制
+            // Vision-based tracking control
             command = calculateTrackingCommand(vision_result);
         } else {
-            // 没有检测到线，停止或搜索
+            // No line was detected. Stop or search
             std::cout << "No line detected, stopping..." << std::endl;
             command = MotorCommand(0, 0);
         }
         
-        // 应用安全约束
+        // Apply security constraints
         MotorCommand safe_command = safety_controller_->applySafetyConstraints(command);
         
-        // 执行运动命令
+        // Execute motion commands
         motor_controller_->executeCommand(safe_command);
     }
     
     MotorCommand calculateTrackingCommand(const VisionResult& vision_result) {
-        // PID控制参数
+        // PID control parameters
         static double kp = 100.0;  // 比例系数
         static double kd = 50.0;   // 微分系数
         static double last_offset = 0.0;
@@ -210,22 +210,22 @@ private:
         double offset_derivative = offset - last_offset;
         last_offset = offset;
         
-        // 计算转向强度
+        // Calculating Steering Strength
         double turn_control = kp * offset + kd * offset_derivative;
         turn_control = std::max(-1.0, std::min(1.0, turn_control / 100.0));
         
-        // 基础速度
+        // base speed
         double base_speed = max_speed_;
         
-        // 根据转向角度调整速度
+        // Adjusts speed to steering angle
         double speed_factor = 1.0 - std::abs(turn_control) * 0.5;
         base_speed *= speed_factor;
         
-        // 计算左右轮速度
+        // Calculate left and right wheel speeds
         int left_speed = static_cast<int>(base_speed * (1.0 - turn_control * turn_sensitivity_));
         int right_speed = static_cast<int>(base_speed * (1.0 + turn_control * turn_sensitivity_));
         
-        // 限制速度范围
+        // Limit speed range
         left_speed = std::max(-Constants::MAX_MOTOR_SPEED, 
                              std::min(Constants::MAX_MOTOR_SPEED, left_speed));
         right_speed = std::max(-Constants::MAX_MOTOR_SPEED, 
@@ -237,7 +237,7 @@ private:
     void printSystemStatus() {
         static int status_counter = 0;
         
-        // 每5秒打印一次状态
+        // Prints status every 5 seconds
         if (++status_counter % 50 == 0) {
             std::cout << "\n=== System Status ===" << std::endl;
             std::cout << "Safety State: " << safety_controller_->getStateDescription() << std::endl;
@@ -256,13 +256,10 @@ private:
     }
 };
 
-// 系统自检函数
+// System self-test function
 bool performSystemSelfTest(SmartCarController& car) {
     std::cout << "\n=== Performing System Self-Test ===" << std::endl;
     
-    // 这里可以添加各个组件的自检
-    // 由于组件已经在SmartCarController中私有化，
-    // 实际项目中可能需要提供公共接口进行自检
     
     std::cout << "System self-test completed" << std::endl;
     return true;
@@ -273,35 +270,35 @@ int main(int argc, char* argv[]) {
     std::cout << "Version: 1.0.0" << std::endl;
     std::cout << "Build Date: " << __DATE__ << " " << __TIME__ << std::endl;
     
-    // 设置信号处理
+    // Setting up signal processing
     signal(SIGINT, signalHandler);
     signal(SIGTERM, signalHandler);
     
     try {
-        // 创建智能小车控制器
+        // Creating Intelligent Trolley Controllers
         SmartCarController car;
         
-        // 初始化系统
+        // Initialise the system
         if (!car.initialize()) {
             std::cerr << "Failed to initialize smart car system" << std::endl;
             return -1;
         }
         
-        // 执行系统自检
+        // Perform system self-test
         if (!performSystemSelfTest(car)) {
             std::cerr << "System self-test failed" << std::endl;
             return -1;
         }
         
-        // 启动系统
+        // activation system
         car.start();
         
-        // 主循环 - 等待退出信号
+        // Main loop - waiting for exit signal
         while (g_running.load()) {
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
         }
         
-        // 优雅关闭
+        // Elegant closure
         car.shutdown();
         
     } catch (const std::exception& e) {
