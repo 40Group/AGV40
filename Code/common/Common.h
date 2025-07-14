@@ -79,7 +79,7 @@ namespace Constants {
     const int MAX_SAFETY_LATENCY_US = 1000;       // 1ms
 }
 
-// Latency Monitoring - Used for real-time performance evaluation
+// Latency Monitoring
 class LatencyMonitor {
 private:
     std::chrono::steady_clock::time_point start_time_;
