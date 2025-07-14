@@ -11,7 +11,7 @@ int main() {
     
     TimerManager timerMgr;
     
-    // 初始化测试
+    // Initialize the test
     std::cout << "\n1. Testing Timer Manager Initialization..." << std::endl;
     if (!timerMgr.initialize()) {
         std::cerr << "❌ Timer manager initialization failed!" << std::endl;
@@ -19,21 +19,21 @@ int main() {
     }
     std::cout << "✅ Timer manager initialized successfully" << std::endl;
     
-    // 自检测试
+    // Self-test test
     std::cout << "\n2. Running Timer Manager Self-Test..." << std::endl;
     if (!timerMgr.selfTest()) {
         std::cerr << "❌ Timer manager self-test failed!" << std::endl;
         return -1;
     }
     
-    // 基本定时器测试
+    // Basic timer test
     std::cout << "\n3. Basic Timer Functionality Test" << std::endl;
     
     std::atomic<int> timer1_count(0);
     std::atomic<int> timer2_count(0);
     std::atomic<bool> oneshot_executed(false);
     
-    // 创建重复定时器
+    // Create a recurrence timer
     uint32_t timer1 = timerMgr.createTimer(
         std::chrono::milliseconds(500),
         [&timer1_count]() {
@@ -52,7 +52,7 @@ int main() {
         true
     );
     
-    // 创建一次性定时器
+    // Create a one-time timer
     uint32_t oneshot = timerMgr.createOneShotTimer(
         std::chrono::milliseconds(2500),
         [&oneshot_executed]() {
@@ -64,7 +64,7 @@ int main() {
     std::cout << "Created timers - Timer1: " << timer1 << ", Timer2: " << timer2 
               << ", OneShot: " << oneshot << std::endl;
     
-    // 监控定时器执行
+    // Monitor timer execution
     std::cout << "\n4. Timer Execution Monitoring (10 seconds)" << std::endl;
     auto start_time = std::chrono::steady_clock::now();
     
@@ -80,7 +80,7 @@ int main() {
         std::this_thread::sleep_for(std::chrono::seconds(1));
     }
     
-    // 定时器控制测试
+    // Timer control test
     std::cout << "\n5. Timer Control Test" << std::endl;
     
     std::cout << "Pausing Timer1..." << std::endl;
@@ -96,7 +96,7 @@ int main() {
     
     std::this_thread::sleep_for(std::chrono::seconds(2));
     
-    // 定时器剩余时间测试
+    // Timer remaining time test
     std::cout << "\n6. Timer Remaining Time Test" << std::endl;
     auto remaining1 = timerMgr.getTimerRemaining(timer1);
     auto remaining2 = timerMgr.getTimerRemaining(timer2);
@@ -104,7 +104,7 @@ int main() {
     std::cout << "Timer1 remaining: " << remaining1.count() << "ms" << std::endl;
     std::cout << "Timer2 remaining: " << remaining2.count() << "ms" << std::endl;
     
-    // 高频定时器测试
+    // High frequency timer test
     std::cout << "\n7. High-Frequency Timer Test" << std::endl;
     
     std::atomic<int> high_freq_count(0);
@@ -129,10 +129,10 @@ int main() {
     
     timerMgr.cancelTimer(high_freq_timer);
     
-    // 批量操作测试
+    // Batch operation testing
     std::cout << "\n8. Batch Operations Test" << std::endl;
     
-    // 创建多个定时器
+    // Create multiple timers
     std::vector<uint32_t> batch_timers;
     for (int i = 0; i < 5; i++) {
         uint32_t timer_id = timerMgr.createTimer(
@@ -157,12 +157,12 @@ int main() {
     std::cout << "Cancelling all timers..." << std::endl;
     timerMgr.cancelAllTimers();
     
-    // 性能测试
+    // Performance testing
     std::cout << "\n9. Performance Test" << std::endl;
     
     auto perf_start = std::chrono::high_resolution_clock::now();
     
-    // 创建大量定时器
+    // Create a large number of timers
     std::vector<uint32_t> perf_timers;
     for (int i = 0; i < 100; i++) {
         uint32_t timer_id = timerMgr.createTimer(
@@ -180,12 +180,12 @@ int main() {
     std::cout << "Created 100 timers in " << creation_time << " μs" << std::endl;
     std::cout << "Average creation time: " << creation_time / 100.0 << " μs per timer" << std::endl;
     
-    // 清理性能测试定时器
+    // Clean up the performance test timer
     for (auto timer_id : perf_timers) {
         timerMgr.cancelTimer(timer_id);
     }
     
-    // 最终统计
+    // Final Statistics
     std::cout << "\n10. Final Statistics" << std::endl;
     auto final_stats = timerMgr.getStats();
     
@@ -199,7 +199,7 @@ int main() {
     std::cout << "  OneShot: " << (oneshot_executed ? "Executed" : "Not executed") << std::endl;
     std::cout << "  High-frequency: " << actual_count << " executions" << std::endl;
     
-    // 清理
+    // clean
     timerMgr.shutdown();
     std::cout << "\n✅ Timer manager test completed successfully!" << std::endl;
     return 0;
