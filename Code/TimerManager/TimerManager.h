@@ -27,10 +27,10 @@ private:
     std::thread timer_thread_;
     std::condition_variable timer_cv_;
     
-    // 定时器管理主循环
+    // The timer manages the main loop
     void timerLoop();
     
-    // 获取下一个需要执行的定时器
+    // Get the next timer that needs to be executed
     std::shared_ptr<TimerInfo> getNextTimer();
 
 public:
@@ -40,7 +40,7 @@ public:
     bool initialize();
     void shutdown();
     
-    // 定时器创建和管理
+    // Timer creation and management
     uint32_t createTimer(std::chrono::milliseconds interval, 
                         TimerCallback callback, 
                         bool repeating = true);
@@ -52,20 +52,20 @@ public:
     bool pauseTimer(uint32_t timer_id);
     bool resumeTimer(uint32_t timer_id);
     
-    // 定时器状态查询
+    // Timer status query
     bool isTimerActive(uint32_t timer_id);
     std::chrono::milliseconds getTimerRemaining(uint32_t timer_id);
     size_t getActiveTimerCount();
     
-    // 批量操作
+    // Bulk operations
     void cancelAllTimers();
     void pauseAllTimers();
     void resumeAllTimers();
     
-    // 状态查询
+    // Status inquiry
     bool isRunning() const { return running_.load(); }
     
-    // 统计信息
+    // Statistics
     struct TimerStats {
         size_t total_timers;
         size_t active_timers;
@@ -74,7 +74,7 @@ public:
     };
     TimerStats getStats() const;
     
-    // 测试方法
+    // Test Method:
     bool selfTest();
 };
 
