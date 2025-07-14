@@ -5,15 +5,14 @@ project(SmartMedicalCar VERSION 1.0.0)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# 查找必需的库
+# Find required libraries
 find_package(Threads REQUIRED)
 find_package(PkgConfig REQUIRED)
 find_package(OpenCV REQUIRED)
 
-# WiringPi (你的代码用的GPIO库)
+# WiringPi
 pkg_check_modules(WIRINGPI REQUIRED wiringpi)
 
-# 包含目录 (按你的项目结构)
 include_directories(
     ${OpenCV_INCLUDE_DIRS}
     ${WIRINGPI_INCLUDE_DIRS}
@@ -27,19 +26,19 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/code/TimerManager
 )
 
-# 库目录
+# library catalogue
 link_directories(
     ${WIRINGPI_LIBRARY_DIRS}
 )
 
-# 库变量
+# library variable
 set(ALL_LIBS
     ${OpenCV_LIBS}
     ${WIRINGPI_LIBRARIES}
     Threads::Threads
 )
 
-# --- 模块库 ---
+# Module library
 add_library(MotorController STATIC
     code/MotorController/MotorController.cpp
     code/MotorController/MotorController.h
@@ -88,7 +87,7 @@ add_library(Common STATIC
 )
 target_link_libraries(Common PRIVATE ${ALL_LIBS})
 
-# --- 主程序 ---
+# Main programme
 add_executable(smart_car
     code/main/main.cpp
 )
@@ -98,12 +97,12 @@ target_link_libraries(smart_car PRIVATE
     TimerManager Common ${ALL_LIBS}
 )
 
-# --- 测试程序 ---
+# Test procedures
 enable_testing()
 
 add_executable(test_motor
     code/MotorController/test_motor.cpp
-)
+)T
 target_link_libraries(test_motor PRIVATE MotorController Common ${ALL_LIBS})
 add_test(NAME MotorTest COMMAND test_motor)
 
