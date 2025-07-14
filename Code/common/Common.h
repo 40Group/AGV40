@@ -17,9 +17,9 @@
 #include <wiringPiI2C.h>
 #include <opencv2/opencv.hpp>
 
-// GPIO引脚定义
+// GPIO Pin definition
 namespace GPIOPins {
-    // 电机控制引脚
+    // Motor control pins
     const int MOTOR_LEFT_PWM = 1;
     const int MOTOR_LEFT_DIR1 = 2;
     const int MOTOR_LEFT_DIR2 = 3;
@@ -27,7 +27,7 @@ namespace GPIOPins {
     const int MOTOR_RIGHT_DIR1 = 5;
     const int MOTOR_RIGHT_DIR2 = 6;
     
-    // 超声波传感器引脚
+    // Ultrasonic sensor pins
     const int ULTRASONIC_TRIG = 7;
     const int ULTRASONIC_ECHO = 8;
     
