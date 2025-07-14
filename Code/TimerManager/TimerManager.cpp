@@ -33,7 +33,7 @@ void TimerManager::shutdown() {
         timer_thread_.join();
     }
     
-    // 清除所有定时器
+    // Clear all timers
     {
         std::lock_guard<std::mutex> lock(timers_mutex_);
         timers_.clear();
@@ -48,7 +48,7 @@ void TimerManager::timerLoop() {
             auto next_timer = getNextTimer();
             
             if (!next_timer) {
-                // 没有活动的定时器，等待新定时器或退出信号
+                // There is no active timer, wait for a new timer or exit signal
                 std::unique_lock<std::mutex> lock(timers_mutex_);
                 timer_cv_.wait_for(lock, std::chrono::milliseconds(1000));
                 continue;
@@ -57,7 +57,7 @@ void TimerManager::timerLoop() {
             auto now = std::chrono::steady_clock::now();
             
             if (now >= next_timer->next_execution) {
-                // 执行定时器回调
+                // Execute a timer callback
                 try {
                     if (next_timer->callback) {
                         next_timer->callback();
@@ -66,20 +66,20 @@ void TimerManager::timerLoop() {
                     std::cerr << "Timer callback exception: " << e.what() << std::endl;
                 }
                 
-                // 更新定时器状态
+                // Update the timer status
                 {
                     std::lock_guard<std::mutex> lock(timers_mutex_);
                     
                     if (next_timer->repeating && next_timer->active) {
-                        // 重复定时器，计算下次执行时间
+                        // Repeat the timer to calculate the next execution time
                         next_timer->next_execution = now + next_timer->interval;
                     } else {
-                        // 一次性定时器或已停用，标记为非活动
+                        // One-time timer or deactivated, marked as inactive
                         next_timer->active = false;
                     }
                 }
             } else {
-                // 等待直到下次执行时间
+                // Wait until the next execution time
                 auto sleep_duration = next_timer->next_execution - now;
                 std::this_thread::sleep_for(sleep_duration);
             }
@@ -96,7 +96,7 @@ std::shared_ptr<TimerManager::TimerInfo> TimerManager::getNextTimer() {
     
     std::shared_ptr<TimerInfo> next_timer = nullptr;
     
-    // 清理已停用的定时器
+    // Clean up deactivated timers
     timers_.erase(
         std::remove_if(timers_.begin(), timers_.end(),
                       [](const std::shared_ptr<TimerInfo>& timer) {
@@ -105,7 +105,7 @@ std::shared_ptr<TimerManager::TimerInfo> TimerManager::getNextTimer() {
         timers_.end()
     );
     
-    // 找到下一个需要执行的定时器
+    // Find the next timer that needs to be executed
     for (auto& timer : timers_) {
         if (timer->active) {
             if (!next_timer || timer->next_execution < next_timer->next_execution) {
@@ -138,7 +138,7 @@ uint32_t TimerManager::createTimer(std::chrono::milliseconds interval,
     
     timers_.push_back(timer);
     
-    // 通知定时器线程有新定时器
+    // Notifies the timer thread that there is a new timer
     timer_cv_.notify_one();
     
     std::cout << "Created timer " << timer->id << " with interval " 
@@ -298,7 +298,7 @@ bool TimerManager::selfTest() {
         return false;
     }
     
-    // 测试一次性定时器
+    // Test the one-time timer
     bool test1_executed = false;
     uint32_t timer1 = createOneShotTimer(
         std::chrono::milliseconds(100),
@@ -308,7 +308,7 @@ bool TimerManager::selfTest() {
         }
     );
     
-    // 测试重复定时器
+    // Test the repeat timer
     int test2_count = 0;
     uint32_t timer2 = createTimer(
         std::chrono::milliseconds(50),
@@ -319,13 +319,13 @@ bool TimerManager::selfTest() {
         true
     );
     
-    // 等待执行
+    // Wait for execution
     std::this_thread::sleep_for(std::chrono::milliseconds(250));
     
-    // 停止重复定时器
+    // Stop repeating the timer
     cancelTimer(timer2);
     
-    // 检查结果
+    // Check the results
     bool test_passed = test1_executed && test2_count >= 3;
     
     std::cout << "Timer manager self-test " 
