@@ -31,37 +31,37 @@ namespace GPIOPins {
     const int ULTRASONIC_TRIG = 7;
     const int ULTRASONIC_ECHO = 8;
     
-    // 红外传感器引脚
+    // Infrared sensor pins
     const int IR_LEFT = 9;
     const int IR_RIGHT = 10;
     const int IR_FRONT = 11;
     
-    // 温控系统引脚
+    // Temperature control system pins
     const int TEMP_SENSOR = 12;
     const int HEATER_PWM = 13;
     const int COOLER_PWM = 14;
     const int TEMP_SENSOR_POWER = 15;
     
-    // 新增传感器引脚
+    // Added sensor pins
     const int LIGHT_SENSOR = 16;
     const int PRESSURE_SENSOR = 17;
     
-    // LED引脚
+    // LED pin
     const int LED_RED = 18;
     const int LED_GREEN = 19;
     const int LED_BLUE = 20;
     const int LED_STATUS = 21;
     
-    // 蜂鸣器引脚
+    // Buzzer pins
     const int BUZZER = 22;
     
-    // 按钮引脚
+    // button pins
     const int BUTTON_EMERGENCY = 23;
     const int BUTTON_START = 24;
     const int BUTTON_STOP = 25;
 }
 
-// 系统常量
+// System constants
 namespace Constants {
     const double MAX_SAFE_DISTANCE = 30.0; // cm
     const double MIN_SAFE_DISTANCE = 10.0; // cm
@@ -72,14 +72,14 @@ namespace Constants {
     const int MAX_MOTOR_SPEED = 255;
     const int MIN_MOTOR_SPEED = 50;
     
-    // 实时性能要求
+    // Real-time performance requirements
     const int MAX_VISION_LATENCY_US = 50000;      // 50ms
     const int MAX_SENSOR_LATENCY_US = 10000;      // 10ms
     const int MAX_CONTROL_LATENCY_US = 5000;      // 5ms
     const int MAX_SAFETY_LATENCY_US = 1000;       // 1ms
 }
 
-// 延迟监控类 - 用于实时性能评估
+// Latency Monitoring - Used for real-time performance evaluation
 class LatencyMonitor {
 private:
     std::chrono::steady_clock::time_point start_time_;
@@ -112,7 +112,7 @@ public:
         
         std::cout << operation_name_ << " latency: " << latency << "μs" << std::endl;
         
-        // 检查是否超过实时要求
+        // Check if the real-time requirements are exceeded
         if (latency > max_allowed_latency_us_) {
             std::cerr << "⚠️  WARNING: " << operation_name_ 
                       << " latency " << latency << "μs exceeded real-time threshold " 
@@ -134,7 +134,7 @@ public:
         double max_lat = *std::max_element(latencies_.begin(), latencies_.end());
         double min_lat = *std::min_element(latencies_.begin(), latencies_.end());
         
-        // 计算超过阈值的次数
+        // Count the number of times the threshold is exceeded
         int violations = std::count_if(latencies_.begin(), latencies_.end(),
                                      [this](double lat) { return lat > max_allowed_latency_us_; });
         
@@ -183,26 +183,26 @@ public:
     virtual bool isRunning() const = 0;
     virtual bool selfTest() = 0;
     
-    // 获取传感器类型信息
+    // Obtain sensor type information
     virtual std::string getSensorType() const = 0;
     virtual std::string getSensorStatus() const = 0;
 };
 
-// 距离传感器接口
+// Proximity sensor interface
 class IDistanceSensor : public ISensor {
 public:
     virtual double getDistance() = 0;
     virtual bool isObstacleDetected(double threshold) = 0;
 };
 
-// 环境传感器接口  
+// Environmental sensor interface    
 class IEnvironmentSensor : public ISensor {
 public:
     virtual double getCurrentValue() = 0;
     virtual bool isWithinNormalRange() = 0;
 };
 
-// 视觉传感器接口
+// Vision sensor interface
 class IVisionSensor : public ISensor {
 public:
     virtual VisionResult processFrame() = 0;
@@ -210,7 +210,7 @@ public:
     virtual bool isCameraReady() const = 0;
 };
 
-// 控制器接口
+// Controller interface
 class IController {
 public:
     virtual ~IController() = default;
@@ -221,7 +221,7 @@ public:
     virtual std::string getControllerType() const = 0;
 };
 
-// 电机控制器接口
+// Motor controller interface
 class IMotorController : public IController {
 public:
     virtual void executeCommand(const MotorCommand& command) = 0;
@@ -231,7 +231,7 @@ public:
     virtual MotorCommand getCurrentCommand() const = 0;
 };
 
-// 温度控制器接口
+// Temperature controller interface
 class ITemperatureController : public IController {
 public:
     virtual void setTargetTemperature(double target) = 0;
@@ -240,7 +240,7 @@ public:
     virtual bool isTemperatureStable(double tolerance = 1.0) = 0;
 };
 
-// 安全控制器接口
+// Safety controller interface
 class ISafetyController : public IController {
 public:
     virtual bool isSafeToMove() = 0;
@@ -251,7 +251,7 @@ public:
 };
 // 
 
-// 全局延迟监控器实例
+// Global Latency Monitor instance
 namespace PerformanceMonitors {
     extern LatencyMonitor vision_monitor;
     extern LatencyMonitor sensor_monitor;
@@ -259,7 +259,7 @@ namespace PerformanceMonitors {
     extern LatencyMonitor safety_monitor;
 }
 
-// 运动控制结构
+// Motion control structures
 struct MotorCommand {
     int left_speed;   // -255 to 255
     int right_speed;  // -255 to 255
@@ -272,7 +272,7 @@ struct MotorCommand {
                                 timestamp(std::chrono::steady_clock::now()) {}
 };
 
-// 传感器数据结构
+// Sensor data structures
 struct SensorData {
     double ultrasonic_distance;
     bool ir_left_obstacle;
@@ -289,7 +289,7 @@ struct SensorData {
                    timestamp(std::chrono::steady_clock::now()) {}
 };
 
-// 视觉处理结果
+// Visual processing results
 struct VisionResult {
     bool line_detected;
     double line_offset;  // -1.0 (left) to 1.0 (right)
@@ -304,7 +304,7 @@ struct VisionResult {
                      timestamp(std::chrono::steady_clock::now()) {}
 };
 
-// 性能基准测试结构
+// Performance benchmark structure
 struct PerformanceBenchmark {
     std::string component_name;
     double average_latency_us;
@@ -320,7 +320,7 @@ struct PerformanceBenchmark {
           benchmark_time(std::chrono::steady_clock::now()) {}
 };
 
-// 系统健康状态
+// System health status
 struct SystemHealth {
     bool motor_healthy;
     bool vision_healthy;
@@ -341,22 +341,22 @@ struct SystemHealth {
     }
 };
 
-// 实用工具函数
+// Utility functions
 namespace Utils {
-    // 时间戳转字符串
+    //  Timestamps to strings
     inline std::string timestampToString(const std::chrono::steady_clock::time_point& tp) {
         auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(
             tp.time_since_epoch()).count();
         return std::to_string(ms) + "ms";
     }
     
-    // 限制数值范围
+    // Limit the numeric range
     template<typename T>
     inline T clamp(T value, T min_val, T max_val) {
         return std::max(min_val, std::min(max_val, value));
     }
     
-    // 角度标准化到[-180, 180]
+    // Angles are normalized to[-180, 180]
     inline double normalizeAngle(double angle) {
         while (angle > 180.0) angle -= 360.0;
         while (angle < -180.0) angle += 360.0;
