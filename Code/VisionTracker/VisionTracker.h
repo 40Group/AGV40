@@ -1,7 +1,7 @@
 #include "Common.h"
 // #ifndef VISIONTRACKER_H
 // #define VISIONTRACKER_H
-#ifndef VISION_TRACKER_H  // 建议用这个  防护宏的作用就是防止头文件被重复包含！
+#ifndef VISION_TRACKER_H
 #define VISION_TRACKER_H
 
 
@@ -12,11 +12,11 @@ private:
     std::mutex result_mutex_;
     VisionResult latest_result_;
     
-    // 图像处理参数
+    // Image processing parameters
     cv::Size image_size_;
     cv::Mat kernel_;
     
-    // 线检测参数
+    // Line Detection Parameters
     int binary_threshold_;
     int min_line_length_;
     int max_line_gap_;
@@ -24,10 +24,10 @@ private:
     double theta_resolution_;
     int hough_threshold_;
     
-    // ROI设置
+    // Setting ROI
     cv::Rect roi_;
     
-    // 图像处理方法
+    // Image Processing Methods
     cv::Mat preprocessImage(const cv::Mat& image);
     cv::Mat applyROI(const cv::Mat& image);
     std::vector<cv::Vec4i> detectLines(const cv::Mat& binary_image);
@@ -36,7 +36,7 @@ private:
     double calculateLineOffset(const cv::Point2f& line_center);
     double calculateLineAngle(const std::vector<cv::Vec4i>& lines);
     
-    // 调试和可视化
+    // Debugging and Visualisation
     void drawDebugInfo(cv::Mat& image, const VisionResult& result, 
                       const std::vector<cv::Vec4i>& lines);
 
@@ -47,20 +47,20 @@ public:
     bool initialize(int camera_id = 0);
     void shutdown();
     
-    // 主要处理方法 - 阻塞式获取新帧
+    // Blocking Acquisition of New Frames
     VisionResult processFrame();
     VisionResult getLatestResult();
     
-    // 参数设置
+    // parameter setting
     void setBinaryThreshold(int threshold) { binary_threshold_ = threshold; }
     void setROI(const cv::Rect& roi) { roi_ = roi; }
     void setHoughParameters(int threshold, int min_length, int max_gap);
     
-    // 状态查询
+    // Status Enquiry
     bool isRunning() const { return running_.load(); }
     bool isCameraReady() const { return camera_.isOpened(); }
     
-    // 调试方法
+    // Commissioning method
     cv::Mat getLastProcessedFrame();
     void saveDebugFrame(const std::string& filename);
     bool selfTest();
