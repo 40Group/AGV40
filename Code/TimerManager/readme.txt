@@ -1,6 +1,3 @@
-Timer Manager Module
-====================
-
 Purpose: High-precision timer management for system scheduling
 
 Files:
