@@ -93,15 +93,14 @@ void TemperatureController::shutdown() {
     std::cout << "TemperatureController shutdown (Event-driven)" << std::endl;
 }
 
-bool TemperatureController::openTemperatureSensorFile() {
-    // DS18B20 devices are typically found in the /sys/bus/w1/devices/ directory.
+bool TemperatureController::openTemperatureSensorFile() {    
+    
     std::string devices_path = "/sys/bus/w1/devices/";
     
     try {
         for (const auto& entry : std::filesystem::directory_iterator(devices_path)) {
             std::string device_name = entry.path().filename().string();
-            
-            // DS18B20 device names usually start with 28-
+        
             if (device_name.substr(0, 3) == "28-") {
                 sensor_device_path_ = entry.path().string() + "/w1_slave";
                 
@@ -349,7 +348,7 @@ bool TemperatureController::isWithinSafeRange() const {
 }
 
 TemperatureController::TemperatureStats TemperatureController::getTemperatureStats() {
-    // Simplified implementation; historical data can be maintained in actual projects.
+   
     TemperatureStats stats;
     double current = current_temperature_.load();
     stats.min_temp = current;
@@ -361,7 +360,7 @@ TemperatureController::TemperatureStats TemperatureController::getTemperatureSta
 }
 
 void TemperatureController::setTemperatureCallback(TemperatureCallback callback) {
-    // Callback functionality can be added when needed.
+    
 }
 
 bool TemperatureController::selfTest() {
