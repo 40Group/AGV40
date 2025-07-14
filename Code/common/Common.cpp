@@ -1,6 +1,6 @@
 #include "../include/Common.h"
 
-// 全局延迟监控器实例定义
+// Global Latency Monitor instance definition
 namespace PerformanceMonitors {
     LatencyMonitor vision_monitor("Vision Processing", Constants::MAX_VISION_LATENCY_US);
     LatencyMonitor sensor_monitor("Sensor Reading", Constants::MAX_SENSOR_LATENCY_US);
