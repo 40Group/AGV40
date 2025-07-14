@@ -5,10 +5,10 @@ VisionTracker::VisionTracker()
       binary_threshold_(100), min_line_length_(50), max_line_gap_(10),
       rho_resolution_(1), theta_resolution_(CV_PI/180), hough_threshold_(50) {
     
-    // 设置ROI (下半部分图像)
+    // Setting the ROI (lower half of the image)
     roi_ = cv::Rect(0, image_size_.height * 0.6, image_size_.width, image_size_.height * 0.4);
     
-    // 创建形态学操作核
+    // Creation of morphological manipulation kernels
     kernel_ = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(5, 5));
 }
 
@@ -24,12 +24,12 @@ bool VisionTracker::initialize(int camera_id) {
         return false;
     }
     
-    // 设置摄像头参数
+    // Setting the camera parameters
     camera_.set(cv::CAP_PROP_FRAME_WIDTH, image_size_.width);
     camera_.set(cv::CAP_PROP_FRAME_HEIGHT, image_size_.height);
     camera_.set(cv::CAP_PROP_FPS, 30);
     
-    // 预热摄像头
+    // Warm-up camera
     cv::Mat dummy_frame;
     for (int i = 0; i < 10; ++i) {
         camera_ >> dummy_frame;
@@ -47,15 +47,15 @@ void VisionTracker::shutdown() {
         camera_.release();
     }
     
-    // 打印视觉处理性能统计
+    // Print Vision Processing Performance Statistics
     PerformanceMonitors::vision_monitor.printStatistics();
     
     std::cout << "VisionTracker shutdown" << std::endl;
 }
 
-// ✅ 这里是更新的processFrame方法 - 添加了延迟测量
+// Here is the updated processFrame method - added delay measurement!!!
 VisionResult VisionTracker::processFrame() {
-    // 使用全局视觉监控器进行延迟测量
+    // Use the global vision performance monitor for latency measurement.
     PerformanceMonitors::vision_monitor.startMeasurement("Vision Processing");
     
     if (!running_.load() || !camera_.isOpened()) {
@@ -64,7 +64,7 @@ VisionResult VisionTracker::processFrame() {
     
     cv::Mat frame;
     
-    // 阻塞式获取新帧 - 这是正确的事件驱动方式
+    // Blocking acquisition of a new frame.
     auto frame_start = std::chrono::steady_clock::now();
     camera_ >> frame;
     auto frame_end = std::chrono::steady_clock::now();
@@ -74,43 +74,43 @@ VisionResult VisionTracker::processFrame() {
         return VisionResult();
     }
     
-    // 测量帧获取时间
+    // Measurement of frame acquisition time
     auto frame_capture_time = std::chrono::duration_cast<std::chrono::microseconds>(
         frame_end - frame_start).count();
     
-    // 图像处理开始
+    // Image processing started
     auto processing_start = std::chrono::steady_clock::now();
     
-    // 图像预处理
+    // Image pre-processing
     cv::Mat processed = preprocessImage(frame);
     
-    // 应用ROI
+    // Apply ROI
     cv::Mat roi_image = applyROI(processed);
     
-    // 线检测
+    // Line detection
     std::vector<cv::Vec4i> lines = detectLines(roi_image);
     
-    // 分析结果
+    // Analysed result
     VisionResult result = analyzeLines(lines, frame);
     
-    // 测量图像处理时间
+    // Measurement of image processing time
     auto processing_end = std::chrono::steady_clock::now();
     auto processing_time = std::chrono::duration_cast<std::chrono::microseconds>(
         processing_end - processing_start).count();
     
-    // 设置结果中的处理时间
+    // Setting the processing time in the result
     result.processing_time_us = static_cast<int>(processing_time);
     
-    // 更新最新结果
+    // Updating the latest results
     {
         std::lock_guard<std::mutex> lock(result_mutex_);
         latest_result_ = result;
     }
     
-    // 结束延迟测量并记录
+    // End delay measurement and record
     double total_latency = PerformanceMonitors::vision_monitor.endMeasurement();
     
-    // 详细性能日志（可选）
+    // Detailed Performance Log
     if (total_latency > Constants::MAX_VISION_LATENCY_US * 0.8) { // 超过80%阈值时警告
         std::cout << "Vision performance details:" << std::endl;
         std::cout << "  Frame capture: " << frame_capture_time << "μs" << std::endl;
@@ -124,17 +124,17 @@ VisionResult VisionTracker::processFrame() {
 cv::Mat VisionTracker::preprocessImage(const cv::Mat& image) {
     cv::Mat gray, binary, processed;
     
-    // 转换为灰度图
+    // Convert to greyscale
     cv::cvtColor(image, gray, cv::COLOR_BGR2GRAY);
     
-    // 高斯模糊减少噪声
+    // Gaussian blur reduces noise
     cv::GaussianBlur(gray, gray, cv::Size(5, 5), 0);
     
-    // 自适应阈值二值化
+    // Adaptive threshold binarisation
     cv::adaptiveThreshold(gray, binary, 255, cv::ADAPTIVE_THRESH_MEAN_C, 
                          cv::THRESH_BINARY, 11, 2);
     
-    // 形态学操作去除噪声
+    // Morphological operations to remove noise
     cv::morphologyEx(binary, processed, cv::MORPH_CLOSE, kernel_);
     cv::morphologyEx(processed, processed, cv::MORPH_OPEN, kernel_);
     
@@ -150,17 +150,17 @@ cv::Mat VisionTracker::applyROI(const cv::Mat& image) {
 std::vector<cv::Vec4i> VisionTracker::detectLines(const cv::Mat& binary_image) {
     std::vector<cv::Vec4i> lines;
     
-    // 使用霍夫变换检测直线
+    // Detecting Straight Lines Using the Hough Transform
     cv::HoughLinesP(binary_image, lines, rho_resolution_, theta_resolution_, 
                     hough_threshold_, min_line_length_, max_line_gap_);
     
-    // 过滤掉过于水平的线
+    // Filter out overly horizontal lines
     std::vector<cv::Vec4i> filtered_lines;
     for (const auto& line : lines) {
         int x1 = line[0], y1 = line[1], x2 = line[2], y2 = line[3];
         double angle = std::atan2(y2 - y1, x2 - x1) * 180.0 / CV_PI;
         
-        // 保留角度在 30-150 度范围内的线
+        // Retaining lines with angles in the range of 30-150 degrees
         if (std::abs(angle) > 30 && std::abs(angle) < 150) {
             filtered_lines.push_back(line);
         }
@@ -184,7 +184,7 @@ VisionResult VisionTracker::analyzeLines(const std::vector<cv::Vec4i>& lines, co
     result.line_offset = calculateLineOffset(result.line_center);
     result.line_angle = calculateLineAngle(lines);
     
-    // 计算置信度 (基于检测到的线条数量和质量)
+    // Calculate the confidence level (based on the number and quality of lines detected)
     result.confidence = std::min(1.0, static_cast<double>(lines.size()) / 10.0);
     
     return result;
@@ -242,7 +242,7 @@ void VisionTracker::setHoughParameters(int threshold, int min_length, int max_ga
 }
 
 cv::Mat VisionTracker::getLastProcessedFrame() {
-    // 实现获取最后处理的帧（用于调试）
+    // Implementation to get the last processed frame (for debugging)
     cv::Mat frame;
     if (camera_.isOpened()) {
         camera_ >> frame;
@@ -266,7 +266,7 @@ bool VisionTracker::selfTest() {
         return false;
     }
     
-    // 性能测试 - 处理多帧并测量性能
+    // Performance testing - process multiple frames and measure performance
     std::cout << "Performance testing - processing 10 frames..." << std::endl;
     
     for (int i = 0; i < 10; ++i) {
@@ -285,11 +285,11 @@ bool VisionTracker::selfTest() {
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
     
-    // 打印性能统计
+    // Printing Performance Statistics
     std::cout << "\nVision processing performance analysis:" << std::endl;
     PerformanceMonitors::vision_monitor.printStatistics();
     
-    // 检查实时性能合规性
+    // Checking real-time performance compliance
     bool performance_ok = PerformanceMonitors::vision_monitor.isRealTimeCompliant();
     std::cout << "Real-time performance: " 
               << (performance_ok ? "✅ COMPLIANT" : "❌ NON-COMPLIANT") << std::endl;
