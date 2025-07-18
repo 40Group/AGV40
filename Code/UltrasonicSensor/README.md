@@ -54,6 +54,14 @@ Safety Features:
 - Measurement validation
 - Safe/critical zone classification
 
+Core Logic:
+- Initializes the trigger (TRIG) pin as an output and the echo (ECHO) pin as an input using the WiringPi library.
+
+- A dedicated thread repeatedly sends a trigger pulse and waits for the echo signal to return.
+
+- The time difference between sending and receiving the signal is used to compute distance.
+
+- A timeout mechanism is in place to avoid infinite blocking if no echo is received.
 Medical Transport Features:
 - Precise obstacle detection
 - Real-time collision avoidance
