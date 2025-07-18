@@ -10,16 +10,16 @@ private:
     int front_pin_;
     std::atomic<bool> running_;
     
-    // 传感器状态
+    // Sensor status
     std::atomic<bool> left_obstacle_;
     std::atomic<bool> right_obstacle_;
     std::atomic<bool> front_obstacle_;
     
-    // 定时器相关
+    // Timer-related
     std::thread timer_thread_;
     std::chrono::milliseconds polling_interval_;
     
-    // 定时器轮询循环
+    // Timer polling loop
     void timerPollingLoop();
     void readAllSensors();
 
@@ -32,13 +32,13 @@ public:
     bool initialize();
     void shutdown();
     
-    // 主要检测方法
+    // Main detection methods
     bool isLeftObstacle() const { return left_obstacle_.load(); }
     bool isRightObstacle() const { return right_obstacle_.load(); }
     bool isFrontObstacle() const { return front_obstacle_.load(); }
     bool isAnyObstacle() const;
     
-    // 批量状态获取
+    // Batch status retrieval
     struct ObstacleState {
         bool left;
         bool right;
@@ -47,13 +47,13 @@ public:
     };
     ObstacleState getAllStates();
     
-    // 参数设置
+    // Parameter settings
     void setPollingInterval(std::chrono::milliseconds interval);
     
-    // 状态查询
+    // Status Inquiry
     bool isRunning() const { return running_.load(); }
     
-    // 测试方法
+    // Testing method
     bool selfTest();
 };
 
