@@ -1,4 +1,4 @@
-Vision Tracker Module
+Vision Tracker Moduled
 =====================
 
 Purpose: Real-time line detection for medical car navigation
