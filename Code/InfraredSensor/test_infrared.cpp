@@ -11,7 +11,7 @@ int main() {
     
     InfraredSensor irSensor;
     
-    // 初始化测试
+    // Initialization test
     std::cout << "\n1. Testing Infrared Sensor Initialization..." << std::endl;
     if (!irSensor.initialize()) {
         std::cerr << "❌ IR sensor initialization failed!" << std::endl;
@@ -19,22 +19,22 @@ int main() {
     }
     std::cout << "✅ IR sensors initialized successfully" << std::endl;
     
-    // 传感器状态检查
+    // Sensor status check
     std::cout << "Sensor running: " << (irSensor.isRunning() ? "YES" : "NO") << std::endl;
     
-    // 自检测试
+    // Self-check test
     std::cout << "\n2. Running IR Sensor Self-Test..." << std::endl;
     if (!irSensor.selfTest()) {
         std::cerr << "❌ IR sensor self-test failed!" << std::endl;
         return -1;
     }
     
-    // 轮询间隔设置测试
+    // Polling interval setting test
     std::cout << "\n3. Polling Interval Configuration Test" << std::endl;
     std::cout << "Setting polling interval to 100ms..." << std::endl;
     irSensor.setPollingInterval(std::chrono::milliseconds(100));
     
-    // 实时障碍物检测测试
+    // Real-time Obstacle Detection Test
     std::cout << "\n4. Real-time Obstacle Detection Test (30 seconds)" << std::endl;
     std::cout << "Move objects near the sensors to test detection..." << std::endl;
     std::cout << "Time\t| Left\t| Right\t| Front\t| Any Obstacle" << std::endl;
@@ -47,22 +47,22 @@ int main() {
     while (std::chrono::steady_clock::now() - start_time < std::chrono::seconds(30)) {
         reading_count++;
         
-        // 获取所有传感器状态
+        // Obtain the status of all sensors
         auto state = irSensor.getAllStates();
         
-        // 统计检测次数
+        // Statistical detection frequency
         if (state.left) left_detections++;
         if (state.right) right_detections++;
         if (state.front) front_detections++;
         
-        // 显示当前状态
+        // Display current status
         std::cout << std::setw(6) << reading_count << "s\t| "
                   << (state.left ? "DETECT" : "CLEAR") << "\t| "
                   << (state.right ? "DETECT" : "CLEAR") << "\t| "
                   << (state.front ? "DETECT" : "CLEAR") << "\t| "
                   << (irSensor.isAnyObstacle() ? "YES" : "NO") << std::endl;
         
-        // 特殊提示
+        // Special Note
         if (irSensor.isAnyObstacle()) {
             std::cout << "⚠️  OBSTACLE DETECTED - Vehicle should stop!" << std::endl;
         }
@@ -70,7 +70,7 @@ int main() {
         std::this_thread::sleep_for(std::chrono::milliseconds(500));
     }
     
-    // 传感器组合测试
+    // Sensor combination test
     std::cout << "\n5. Sensor Combination Test" << std::endl;
     auto final_state = irSensor.getAllStates();
     
@@ -81,7 +81,7 @@ int main() {
     
     std::cout << "Combined detection: " << (irSensor.isAnyObstacle() ? "OBSTACLE PRESENT" : "PATH CLEAR") << std::endl;
     
-    // 性能测试
+    // performance test
     std::cout << "\n6. Performance and Timing Test" << std::endl;
     std::cout << "Testing sensor response time..." << std::endl;
     
@@ -97,7 +97,7 @@ int main() {
     std::cout << "Average sensor read time: " << avg_time << " μs" << std::endl;
     std::cout << "Performance: " << (avg_time < 1000 ? "EXCELLENT" : "ACCEPTABLE") << std::endl;
     
-    // 高频轮询测试
+    // High-frequency polling test
     std::cout << "\n7. High-Frequency Polling Test" << std::endl;
     std::cout << "Setting high-frequency polling (20ms)..." << std::endl;
     irSensor.setPollingInterval(std::chrono::milliseconds(20));
@@ -121,7 +121,7 @@ int main() {
     std::cout << "Total rapid readings: " << rapid_readings << std::endl;
     std::cout << "Effective sampling rate: " << rapid_readings / 10.0 << " Hz" << std::endl;
     
-    // 统计结果
+    // statistical result
     std::cout << "\n8. Detection Statistics" << std::endl;
     std::cout << "Total test duration: 30 seconds" << std::endl;
     std::cout << "Total readings: " << reading_count << std::endl;
@@ -132,7 +132,7 @@ int main() {
     std::cout << "Front sensor detections: " << front_detections 
               << " (" << (100.0 * front_detections / reading_count) << "%)" << std::endl;
     
-    // 清理
+    // clear
     irSensor.shutdown();
     std::cout << "\n✅ IR sensor test completed successfully!" << std::endl;
     return 0;
