@@ -1,4 +1,4 @@
-##Purpose: High-precision timer management for system scheduling
+## Purpose: High-precision timer management for system scheduling
 
 #Files:
 - TimerManager.h: Class declaration
