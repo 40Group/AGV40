@@ -16,7 +16,7 @@ bool InfraredSensor::initialize() {
         return false;
     }
     
-    // 设置引脚为输入模式，启用上拉电阻
+    // Set the pin to input mode and enable the pull-up resistor
     pinMode(left_pin_, INPUT);
     pinMode(right_pin_, INPUT);
     pinMode(front_pin_, INPUT);
@@ -27,7 +27,7 @@ bool InfraredSensor::initialize() {
     
     running_ = true;
     
-    // 启动定时器轮询线程
+    // Start the timer polling thread
     timer_thread_ = std::thread(&InfraredSensor::timerPollingLoop, this);
     
     std::cout << "InfraredSensor initialized successfully (Timer polling mode)" << std::endl;
@@ -52,12 +52,12 @@ void InfraredSensor::timerPollingLoop() {
 }
 
 void InfraredSensor::readAllSensors() {
-    // 读取所有传感器状态 (LOW表示检测到障碍物)
+    // Read the status of all sensors (LOW indicates the detection of obstacles)
     bool left = (digitalRead(left_pin_) == LOW);
     bool right = (digitalRead(right_pin_) == LOW);
     bool front = (digitalRead(front_pin_) == LOW);
     
-    // 更新状态（只在状态改变时输出信息）
+    // Update the status (output information only when the status changes)
     if (left != left_obstacle_.load()) {
         left_obstacle_.store(left);
         if (left) std::cout << "Left obstacle detected!" << std::endl;
@@ -102,7 +102,7 @@ bool InfraredSensor::selfTest() {
         return false;
     }
     
-    // 监控状态变化
+    // Monitor status changes
     std::cout << "Monitoring for 5 seconds..." << std::endl;
     auto start_time = std::chrono::steady_clock::now();
     
