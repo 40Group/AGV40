@@ -14,7 +14,17 @@
 - Sufficient lighting for line detection
 
 ## Compilation:
-g++ -std=c++17 test_vision.cpp VisionTracker.cpp -o vision_test -lopencv_core -lopencv_imgproc -lopencv_imgcodecs -lopencv_videoio -lopencv_highgui -lwiringPi -lpthread
+g++ 
+-std=c++17 
+test_vision.cpp VisionTracker.cpp 
+-o vision_test 
+-lopencv_core 
+-lopencv_imgproc 
+-lopencv_imgcodecs 
+-lopencv_videoio 
+-lopencv_highgui 
+-lwiringPi 
+-lpthread
 
 ## Run Test:
 ./vision_test
