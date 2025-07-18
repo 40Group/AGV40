@@ -62,3 +62,12 @@ Medical Transport Features:
 - Collision prevention system
 - Safe navigation assistance
 - Professional reliability standards
+
+Core Logic:
+- Upon initialization, the module configures the GPIO pins as inputs with pull-up resistors using the WiringPi library, ensuring they read HIGH by default (no obstacle).
+
+- A dedicated polling thread is launched, which continuously reads the sensor states at fixed intervals (default: 50ms).
+
+- When a pin reads LOW (digitalRead(pin) == LOW), it indicates the presence of an obstacle in that direction.
+
+- The module logs only state changes (e.g., from "no obstacle" to "obstacle detected"), reducing redundant output and improving clarity.
