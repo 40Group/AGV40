@@ -23,16 +23,16 @@ bool UltrasonicSensor::initialize() {
         return false;
     }
     
-    // 设置引脚模式
+    // Set pin mode
     pinMode(trig_pin_, OUTPUT);
     pinMode(echo_pin_, INPUT);
     
-    // 初始化引脚状态
+    // Initialize pin states
     digitalWrite(trig_pin_, LOW);
     
     running_ = true;
     
-    // 启动阻塞I/O测量线程
+    // Start the blocking I/O measurement thread
     measurement_thread_ = std::thread(&UltrasonicSensor::blockingMeasurementLoop, this);
     
     std::cout << "UltrasonicSensor initialized successfully (Blocking I/O)" << std::endl;
@@ -49,7 +49,7 @@ void UltrasonicSensor::shutdown() {
     std::cout << "UltrasonicSensor shutdown" << std::endl;
 }
 
-void UltrasonicSensor::blockingMeasurementLoop() {  // ✅ 修正类名
+void UltrasonicSensor::blockingMeasurementLoop() {  // ✅ Correct the class name
     while (running_.load()) {
         double distance = measureDistanceBlocking();
         
@@ -58,7 +58,7 @@ void UltrasonicSensor::blockingMeasurementLoop() {  // ✅ 修正类名
             latest_distance_.store(distance);
         }
         
-        // 等待下次测量 - 阻塞I/O方式的间隔
+        // Waiting for the next measurement - The interval of the blocking I/O mode
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
 }
@@ -66,40 +66,40 @@ void UltrasonicSensor::blockingMeasurementLoop() {  // ✅ 修正类名
 double UltrasonicSensor::measureDistanceBlocking() {
     std::lock_guard<std::mutex> lock(distance_mutex_);
     
-    // 发送触发信号
+    // Send the triggering signal
     digitalWrite(trig_pin_, HIGH);
     delayMicroseconds(10);
     digitalWrite(trig_pin_, LOW);
     
-    // 阻塞等待echo信号上升沿
+    // Wait for the rising edge of the echo signal.
     auto start_time = std::chrono::steady_clock::now();
     auto timeout = std::chrono::microseconds(TIMEOUT_US);
     
-    // 等待echo引脚变高
+    // Wait for the echo pin to go high
     while (digitalRead(echo_pin_) == LOW) {
         auto current_time = std::chrono::steady_clock::now();
         if (current_time - start_time > timeout) {
             std::cerr << "Ultrasonic sensor timeout (waiting for HIGH)" << std::endl;
             return 999.0;
         }
-        delayMicroseconds(1);  // 短暂延迟，避免过于频繁轮询
+        delayMicroseconds(1);  // A brief delay to avoid overly frequent polling
     }
     
     auto echo_start = std::chrono::steady_clock::now();
     
-    // 阻塞等待echo引脚变低
+    // Blocking and waiting for the echo pin to go low
     while (digitalRead(echo_pin_) == HIGH) {
         auto current_time = std::chrono::steady_clock::now();
         if (current_time - start_time > timeout) {
             std::cerr << "Ultrasonic sensor timeout (waiting for LOW)" << std::endl;
             return 999.0;
         }
-        delayMicroseconds(1);  // 短暂延迟，避免过于频繁轮询
+        delayMicroseconds(1);  // A brief delay to avoid overly frequent polling
     }
     
     auto echo_end = std::chrono::steady_clock::now();
     
-    // 计算距离
+    // Calculate the distance
     auto pulse_duration = std::chrono::duration_cast<std::chrono::microseconds>(echo_end - echo_start);
     double distance = (pulse_duration.count() * SOUND_SPEED) / (2.0 * 1000000.0);
     
@@ -110,8 +110,8 @@ double UltrasonicSensor::getStableDistance() {
     std::vector<double> readings;
     
     for (int i = 0; i < STABLE_READINGS; ++i) {
-        double distance = getDistance();  // 现在是非阻塞获取最新值
-        if (distance < 400.0) { // 有效读数
+        double distance = getDistance();  // Now, it is time to asynchronously obtain the latest value.
+        if (distance < 400.0) { // Valid reading
             readings.push_back(distance);
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
@@ -121,7 +121,7 @@ double UltrasonicSensor::getStableDistance() {
         return 999.0;
     }
     
-    // 计算平均值
+    // calculate the average amount
     double sum = 0.0;
     for (double reading : readings) {
         sum += reading;
@@ -143,14 +143,14 @@ bool UltrasonicSensor::selfTest() {
         return false;
     }
     
-    // 测试距离测量
+    // Test distance measurement
     for (int i = 0; i < 5; ++i) {
         double distance = getDistance();
         std::cout << "Distance reading " << i + 1 << ": " << distance << " cm" << std::endl;
         std::this_thread::sleep_for(std::chrono::milliseconds(500));
     }
     
-    // 测试稳定距离测量
+    // Test for stable distance measurement
     double stable_distance = getStableDistance();
     std::cout << "Stable distance: " << stable_distance << " cm" << std::endl;
     
@@ -158,7 +158,7 @@ bool UltrasonicSensor::selfTest() {
     return true;
 }
 
-// 保留中断处理函数作为备用（虽然现在用阻塞I/O）
+// Keep the interrupt handling function as a backup (although currently using blocking I/O)
 void UltrasonicSensor::echoInterruptHandler() {
     if (instance_ == nullptr) return;
     
@@ -167,10 +167,10 @@ void UltrasonicSensor::echoInterruptHandler() {
     unsigned long current_time = tv.tv_sec * 1000000 + tv.tv_usec;
     
     if (digitalRead(instance_->echo_pin_) == HIGH) {
-        // Echo信号上升沿
+        // Echo signal rising edge
         instance_->echo_start_time_ = current_time;
     } else {
-        // Echo信号下降沿
+        // Echo signal falling edge
         instance_->echo_end_time_ = current_time;
         instance_->echo_received_ = true;
     }
