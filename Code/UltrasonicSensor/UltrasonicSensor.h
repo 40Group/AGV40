@@ -11,19 +11,19 @@ private:
     std::mutex distance_mutex_;
     std::atomic<double> latest_distance_;
     
-    // 阻塞I/O线程
+    // Blocking I/O thread
     std::thread measurement_thread_;
     
-    // 测量参数
+    // measure parameters
     static const int TIMEOUT_US = 30000; // 30ms timeout
     static const double SOUND_SPEED = 34300.0; // cm/s
     static const int STABLE_READINGS = 3;
     
-    // 阻塞式距离测量循环和方法
+    // Blocking-type distance measurement loop and method
     void blockingMeasurementLoop();
     double measureDistanceBlocking();
     
-    // 中断处理相关（保留作为备用）
+    // Interrupt handling related (reserved as a backup)
     static UltrasonicSensor* instance_;
     static void echoInterruptHandler();
     volatile unsigned long echo_start_time_;
@@ -35,7 +35,7 @@ public:
                      int echo_pin = GPIOPins::ULTRASONIC_ECHO);
     ~UltrasonicSensor();
     
-    // 实现ISensor接口
+    // Implement the ISensor interface
     bool initialize() override;
     void shutdown() override;
     bool isRunning() const override { return running_.load(); }
@@ -43,12 +43,12 @@ public:
     std::string getSensorType() const override { return "Ultrasonic Distance Sensor"; }
     std::string getSensorStatus() const override;
     
-    // 实现IDistanceSensor接口
+    // Implement the IDistanceSensor interface
     double getDistance() override { return latest_distance_.load(); }
     bool isObstacleDetected(double threshold) override;
     
-    // 原有的特定方法
-    double getStableDistance(); // 多次测量取平均
+    // The original specific method
+    double getStableDistance(); // Take the average of multiple measurements
     double getLatestDistance() const { return latest_distance_.load(); }
 };
 
