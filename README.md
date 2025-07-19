@@ -42,18 +42,6 @@ Simultaneously, the safety thread polls infrared and ultrasonic sensors every 10
 Temperature control runs in parallel. The DS18B20 sensor continuously monitors the cargo bay temperature and reports readings to the TemperatureController, which employs a PID algorithm to drive the PTC heating module and XD-7082 cooling unit. If the temperature drifts outside the ±0.5°C target range around 25°C, the controller adjusts heating or cooling output accordingly. If unsafe thermal deviations persist, the safety module triggers a thermal emergency stop.
 All recurring tasks—such as sensor polling, control loop execution, and system logging—are scheduled using the TimerManager with sub-millisecond accuracy, ensuring synchronized real-time performance. The system continues operating autonomously until it receives a shutdown signal (e.g., Ctrl+C or button press), at which point it gracefully terminates all threads, shuts down modules in reverse order, and secures system integrity.This tightly integrated workflow ensures that the vehicle navigates accurately, avoids hazards, regulates cargo temperature, and maintains safety—all without human intervention—making it highly suitable for autonomous medical logistics in hospitals.
 
-Multithreading + asynchronous framework
-
-· capture_frames(): responsible for the main logic of servo/tracking/obstacle avoidance, timing (30ms) trigger processing
-
-· get_distance(): Ultrasonic distance measurement, timed (100ms) to update the global variable distance
-
-· temp_control(): PID temperature control, timing (200ms) to drive Peltier and cooling fan
-
-· HTTP Server (cpp-httplib)
-
-· Static resources: front-end HTML/JS/CSS
-
 
 
 
