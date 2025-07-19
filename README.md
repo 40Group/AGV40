@@ -2,9 +2,9 @@
 ## 1. Introduction
 With the rise of smart healthcare and intelligent hospitals, Automated Guided Vehicles (AGVs) have become a key part of modern medical logistics. Traditional manual transport is inefficient and error-prone, while AGVs enable the automatic and precise delivery of items such as medications, samples, and meals, easing staff workload and improving efficiency. To operate effectively in hospital environments, AGVs must ensure stable navigation, real-time obstacle avoidance, and temperature control. They often rely on black line tracking for navigation, ultrasonic sensors for safety, and onboard temperature regulation to protect sensitive medical items like vaccines or specimens.
 
-| GPIO Pin | Name |
-|----------|------|
-|0         | DIR1 |
+| GPIO Pin | Name      |
+|----------|------     |
+|0         | DIR1      |
 
 <p align="center">
   <img src="Images/AGV_Demo.gif" width="300">
