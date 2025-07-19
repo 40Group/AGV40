@@ -41,7 +41,7 @@ Figure 3: Raspberry Pi 4B
 </div>
 
 <p align="center">
-Figure 4: MOSFET driver module&PTC heater
+Figure 4: MOSFET driver module & PTC heater
 </p>
 
 <div align="center">
