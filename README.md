@@ -13,6 +13,11 @@ Figure 1: Demo of AGV Model
 </p>
 
 ## 2. Hardware and Component Selection
+### 2.1Hardware and Architecture
+  At the hardware level, the motor system consists of two 12V DC motors controlled via an L298N motor driver. GPIOs 1, 2, 3 are used for the left motor (PWM, DIR1, DIR2), and GPIOs 4, 5, 6 for the right motor. The robot navigates autonomously using a Raspberry Pi Camera Module v2, which captures real-time road data. The VisionTracker module leverages OpenCV to perform grayscale conversion, Gaussian blurring, adaptive thresholding, and Hough transform to extract line position and orientation. These parameters are fed into a PID controller to generate differential motor commands for smooth line-following.
+  For safety and obstacle avoidance, three infrared sensors are mounted at the front (GPIOs 9, 10, 11) for short-range detection, while a HC-SR04 ultrasonic sensor (TRIG on GPIO 7, ECHO on GPIO 8) provides forward distance measurement. These inputs are handled by the SafetyController module, which performs safety checks every 100 ms. It supports emergency stop actions and dynamically adjusts motion commands to prevent collisions.
+  The temperature regulation system is specially designed to protect sensitive medical cargo. It includes a DS18B20 digital temperature sensor (connected to GPIO 12 with power on GPIO 15), a PTC heating element with a driver board, and a XD-7082 semiconductor cooling module with heatsink and fan. Heating is controlled via PWM on GPIO 13, while cooling uses GPIO 14. A PID-based TemperatureController dynamically adjusts the output power of these actuators to maintain the cargo bay temperature at 25 ± 0.5°C. The system also features over-temperature shutdown and anti-windup protection for reliable control.
+
 ![Table 1](Images/Table1.png)
 
 <p align="center">
