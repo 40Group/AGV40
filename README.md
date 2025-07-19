@@ -36,6 +36,23 @@ Figure 2: Raspberry Pi 4B+ main control board
 Figure 3: ESP core board
 </p>
 
+| Category     | Component                         | Specification                     |
+|--------------|------------------------------------|-----------------------------------|
+| Mainboard    | Raspberry Pi                       | 4B (4GB RAM)                      |
+| Storage Card | microSDXC UHS-I                    | 64GB                              |
+| Card Reader  | MicroSDXC Card Reader (c289)       | 2TB                               |
+| Expansion    | Raspberry Pi Expansion Board       | 40-pin Expansion                  |
+| Camera       | Raspberry Pi Camera Module         | CSI Interface                     |
+| Sensors      | Ultrasonic Sensor                  | HC-SR04                           |
+|              | Infrared Sensor                    | Obstacle Avoidance IR Module     |
+|              | Temperature Sensor                 | DS18B20                           |
+| Actuators    | Motor Driver                       | L298N Motor Driver Board          |
+|              | DC Motor                           | 12V Geared DC Motor ×4           |
+| Power Supply | Battery                            | 12V Lithium Battery Pack          |
+| Software     | Operating System                   | Raspberry Pi OS                   |
+|              | Compiler                           | GCC/G++ 9.4+                      |
+| Controller   | PTC Heating Kit with MOS Module    | [A]+12V/100°C Heating Plate       |
+|              | High Power MOS Driver Module       | 10A                               |
 
 ## 3. System overall structure and operation logic
 ### 3.1Software Operation Process
