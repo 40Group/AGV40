@@ -30,7 +30,7 @@ Figure 3: ESP core board
 </p>
 
 ## 3. System overall structure and operation logic
-## 3.1 Software Architecture
+
 Multithreading + asynchronous framework
 
 · capture_frames(): responsible for the main logic of servo/tracking/obstacle avoidance, timing (30ms) trigger processing
@@ -43,13 +43,7 @@ Multithreading + asynchronous framework
 
 · Static resources: front-end HTML/JS/CSS
 
-## 3.2 Logical Flow
-<p align="center">
-  <img src="Images/Logical%20Flow.png" width="400"/>
-</p>
-<p align="center">
-Figure 4: flow chart
-</p>
+
 
 
 
