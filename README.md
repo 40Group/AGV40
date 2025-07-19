@@ -49,7 +49,6 @@ Figure 3: ESP core board
 | Controller   | PTC Heating Kit with MOS Module    | [A]+12V/100°C Heating Plate       |
 |              | High Power MOS Driver Module       | 10A                               |
 
-<p align="center">
 Table 1: Hardware system configuration table
 </p >
 
