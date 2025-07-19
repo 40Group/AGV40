@@ -58,3 +58,6 @@ Medical Application:
 - Cargo protection during transport
 - Real-time monitoring and alerts
 - Professional medical device standards
+
+All in all：
+- The module is based on Raspberry Pi and WiringPi's **TemperatureController** implementation, which uses an event-driven mechanism to read the DS18B20 sensor temperature in real time and intelligently adjusts the PWM outputs of the heater and cooler based on the PID control algorithm to maintain the target temperature. The module supports GPIO initialization, custom PID parameters, safe temperature limit, breakpoint recovery, self-test function and sensor file system monitoring, which is suitable for the project that has the demand for precise temperature regulation.
