@@ -28,7 +28,7 @@ Figure 2: Obstacle avoidance
 
 
 <div align="center">
-  <img src="Image/Raspberry Pi 4B.png" width="400" alt="Raspberry Pi 4B">
+  <img src="Image/Raspberry Pi 4B.png" width="200" alt="Raspberry Pi 4B">
 </div>
 
 <p align="center">
@@ -37,7 +37,7 @@ Figure 3: Raspberry Pi 4B
 
 
 <div align="center">
-  <img src="Image/MOSFET driver module&PTC heater.jpg" width="400" alt="MOSFET Driver Module and PTC Heater">
+  <img src="Image/MOSFET driver module&PTC heater.jpg" width="200" alt="MOSFET Driver Module and PTC Heater">
 </div>
 
 <p align="center">
@@ -45,7 +45,7 @@ Figure 4: MOSFET driver module&PTC heater
 </p>
 
 <div align="center">
-  <img src="Image/DS18B20 temperature sensor.jpg" width="400" alt="DS18B20 Temperature Sensor">
+  <img src="Image/DS18B20 temperature sensor.jpg" width="200" alt="DS18B20 Temperature Sensor">
 </div>
 
 <p align="center">
@@ -53,7 +53,7 @@ Figure 5: DS18B20 temperature sensor
 </p>
 
 <div align="center">
-  <img src="Image/XD-7082 Peltier cooling plate.jpg" width="400" alt="XD-7082 Peltier Cooling Plate">
+  <img src="Image/XD-7082 Peltier cooling plate.jpg" width="200" alt="XD-7082 Peltier Cooling Plate">
 </div>
 
 <p align="center">
