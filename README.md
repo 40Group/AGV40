@@ -32,6 +32,11 @@ Figure 2: Raspberry Pi 4B+ main control board
 Figure 3: ESP core board
 </p>
 
+<p align="center">
+Table 1: Hardware system configuration table
+</p >
+
+<p align="center">
 | Category     | Component                         | Specification                     |
 |--------------|------------------------------------|-----------------------------------|
 | Mainboard    | Raspberry Pi                       | 4B (4GB RAM)                      |
@@ -49,10 +54,9 @@ Figure 3: ESP core board
 |              | Compiler                           | GCC/G++ 9.4+                      |
 | Controller   | PTC Heating Kit with MOS Module    | [A]+12V/100°C Heating Plate       |
 |              | High Power MOS Driver Module       | 10A                               |
-
-<p align="center">
-Table 1: Hardware system configuration table
 </p >
+
+
 
 ## 3. System overall structure and operation logic
 ### 3.1Software Operation Process
