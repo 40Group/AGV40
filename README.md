@@ -2,12 +2,20 @@
 ## 1. Introduction
 With the rise of smart healthcare and intelligent hospitals, Automated Guided Vehicles (AGVs) have become a key part of modern medical logistics. Traditional manual transport is inefficient and error-prone, while AGVs enable the automatic and precise delivery of items such as medications, samples, and meals, easing staff workload and improving efficiency. To operate effectively in hospital environments, AGVs must ensure stable navigation, real-time obstacle avoidance, and temperature control. They often rely on black line tracking for navigation, ultrasonic sensors for safety, and onboard temperature regulation to protect sensitive medical items like vaccines or specimens.
 
-<p align="center">
-  <img src="Images/AGV_Demo.gif" width="300">
-</p>
+<div align="center">
+  <img src="Image/Line tracking.gif" width="400" alt="Line Tracking">
+</div>
 
 <p align="center">
-Figure 1: Demo of AGV Model
+Figure 1: Line tracking
+</p>
+
+<div align="center">
+  <img src="Image/Obstacle avoidance.gif" width="400" alt="Obstacle Avoidance">
+</div>
+
+<p align="center">
+Figure 2: Obstacle avoidance
 </p>
 
 ## 2. Hardware and Component Selection
@@ -21,17 +29,13 @@ Figure 1: Demo of AGV Model
   <img src="Image/DS18B20 temperature sensor.jpg" width="400" alt="DS18B20 Temperature Sensor">
 </div>
 
-<div align="center">
-  <img src="Image/Line tracking.gif" width="400" alt="Line Tracking">
-</div>
+
 
 <div align="center">
   <img src="Image/MOSFET driver module&PTC heater.jpg" width="400" alt="MOSFET Driver Module and PTC Heater">
 </div>
 
-<div align="center">
-  <img src="Image/Obstacle avoidance.gif" width="400" alt="Obstacle Avoidance">
-</div>
+
 
 <div align="center">
   <img src="Image/Raspberry Pi 4B.png" width="400" alt="Raspberry Pi 4B">
