@@ -25,45 +25,41 @@ Figure 2: Obstacle avoidance
   The temperature regulation system is specially designed to protect sensitive medical cargo. It includes a DS18B20 digital temperature sensor (connected to GPIO 12 with power on GPIO 15), a PTC heating element with a driver board, and a XD-7082 semiconductor cooling module with heatsink and fan. Heating is controlled via PWM on GPIO 13, while cooling uses GPIO 14. A PID-based TemperatureController dynamically adjusts the output power of these actuators to maintain the cargo bay temperature at 25 ± 0.5°C. The system also features over-temperature shutdown and anti-windup protection for reliable control.
 
 
-<div align="center">
-  <img src="Image/DS18B20 temperature sensor.jpg" width="400" alt="DS18B20 Temperature Sensor">
-</div>
-
-
-
-<div align="center">
-  <img src="Image/MOSFET driver module&PTC heater.jpg" width="400" alt="MOSFET Driver Module and PTC Heater">
-</div>
-
 
 
 <div align="center">
   <img src="Image/Raspberry Pi 4B.png" width="400" alt="Raspberry Pi 4B">
 </div>
 
+<p align="center">
+Figure 3: Raspberry Pi 4B
+</p>
+
+
+<div align="center">
+  <img src="Image/MOSFET driver module&PTC heater.jpg" width="400" alt="MOSFET Driver Module and PTC Heater">
+</div>
+
+<p align="center">
+Figure 4: MOSFET driver module&PTC heater
+</p>
+
+<div align="center">
+  <img src="Image/DS18B20 temperature sensor.jpg" width="400" alt="DS18B20 Temperature Sensor">
+</div>
+
+<p align="center">
+Figure 5: DS18B20 temperature sensor
+</p>
+
 <div align="center">
   <img src="Image/XD-7082 Peltier cooling plate.jpg" width="400" alt="XD-7082 Peltier Cooling Plate">
 </div>
 
-
-
 <p align="center">
-  <img src="Images/Raspberry%20Pi%204B.png" width="400"/>
-</p>
-<p align="center">
-Figure 2: Raspberry Pi 4B+ main control board
+Figure 6: XD-7082 Peltier cooling plate
 </p>
 
-<p align="center">
-  <img src="Images/ESP%2032.jpg" width="400"/>
-</p>
-<p align="center">
-Figure 3: ESP core board
-</p>
-
-<p align="center">
-Table 1: Hardware system configuration table
-</p >
 
 <div align="center">
 
