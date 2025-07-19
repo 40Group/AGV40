@@ -94,6 +94,19 @@ All recurring tasks—such as sensor polling, control loop execution, and system
 ### 3.2 Compilation process
 
 
+<table>
+  <tr>
+    <td align="center">
+      <img src="Image/Line tracking.gif" width="250"><br><b>Line Tracking</b>
+    </td>
+    <td align="center">
+      <img src="Image/Obstacle avoidance.gif" width="250"><br><b>Obstacle Avoidance</b>
+    </td>
+    <td align="center">
+      <img src="Image/Raspberry Pi 4B.png" width="250"><br><b>Raspberry Pi</b>
+    </td>
+  </tr>
+</table>
 
 
 ## 4. Summary
