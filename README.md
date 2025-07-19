@@ -31,6 +31,7 @@ Figure 2: Raspberry Pi 4B+ main control board
 <p align="center">
 Figure 3: ESP core board
 </p>
+markdown
 | Category     | Component                         | Specification                     |
 |--------------|------------------------------------|-----------------------------------|
 | Mainboard    | Raspberry Pi                       | 4B (4GB RAM)                      |
