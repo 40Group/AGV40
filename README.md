@@ -36,6 +36,7 @@ Figure 3: ESP core board
 Table 1: Hardware system configuration table
 </p >
 
+<div align="center">
 
 | Category     | Component                         | Specification                     |
 |--------------|------------------------------------|-----------------------------------|
@@ -55,7 +56,7 @@ Table 1: Hardware system configuration table
 | Controller   | PTC Heating Kit with MOS Module    | [A]+12V/100°C Heating Plate       |
 |              | High Power MOS Driver Module       | 10A                               |
 
-
+</div>
 
 ## 3. System overall structure and operation logic
 ### 3.1Software Operation Process
