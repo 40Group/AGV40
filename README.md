@@ -2,10 +2,6 @@
 ## 1. Introduction
 With the rise of smart healthcare and intelligent hospitals, Automated Guided Vehicles (AGVs) have become a key part of modern medical logistics. Traditional manual transport is inefficient and error-prone, while AGVs enable the automatic and precise delivery of items such as medications, samples, and meals, easing staff workload and improving efficiency. To operate effectively in hospital environments, AGVs must ensure stable navigation, real-time obstacle avoidance, and temperature control. They often rely on black line tracking for navigation, ultrasonic sensors for safety, and onboard temperature regulation to protect sensitive medical items like vaccines or specimens.
 
-                  | GPIO Pin | Name      |
-                  |----------|------     |
-                  |0         | DIR1      |
-
 <p align="center">
   <img src="Images/AGV_Demo.gif" width="300">
 </p>
@@ -53,6 +49,7 @@ Figure 3: ESP core board
 |              | Compiler                           | GCC/G++ 9.4+                      |
 | Controller   | PTC Heating Kit with MOS Module    | [A]+12V/100°C Heating Plate       |
 |              | High Power MOS Driver Module       | 10A                               |
+Table 1: Hardware system configuration table
 
 ## 3. System overall structure and operation logic
 ### 3.1Software Operation Process
