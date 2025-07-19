@@ -11,7 +11,7 @@ Figure 1: Line tracking
 </p>
 
 <div align="center">
-  <img src="Image/Obstacle avoidance.gif" width="400" alt="Obstacle Avoidance">
+  <img src="Image/Obstacle avoidance.gif" width="200" alt="Obstacle Avoidance">
 </div>
 
 <p align="center">
