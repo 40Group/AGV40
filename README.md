@@ -17,6 +17,32 @@ Figure 1: Demo of AGV Model
   The temperature regulation system is specially designed to protect sensitive medical cargo. It includes a DS18B20 digital temperature sensor (connected to GPIO 12 with power on GPIO 15), a PTC heating element with a driver board, and a XD-7082 semiconductor cooling module with heatsink and fan. Heating is controlled via PWM on GPIO 13, while cooling uses GPIO 14. A PID-based TemperatureController dynamically adjusts the output power of these actuators to maintain the cargo bay temperature at 25 ± 0.5°C. The system also features over-temperature shutdown and anti-windup protection for reliable control.
 
 
+<div align="center">
+  <img src="Image/DS18B20 temperature sensor.jpg" width="400" alt="DS18B20 Temperature Sensor">
+</div>
+
+<div align="center">
+  <img src="Image/Line tracking.gif" width="400" alt="Line Tracking">
+</div>
+
+<div align="center">
+  <img src="Image/MOSFET driver module&PTC heater.jpg" width="400" alt="MOSFET Driver Module and PTC Heater">
+</div>
+
+<div align="center">
+  <img src="Image/Obstacle avoidance.gif" width="400" alt="Obstacle Avoidance">
+</div>
+
+<div align="center">
+  <img src="Image/Raspberry Pi 4B.png" width="400" alt="Raspberry Pi 4B">
+</div>
+
+<div align="center">
+  <img src="Image/XD-7082 Peltier cooling plate.jpg" width="400" alt="XD-7082 Peltier Cooling Plate">
+</div>
+
+
+
 <p align="center">
   <img src="Images/Raspberry%20Pi%204B.png" width="400"/>
 </p>
