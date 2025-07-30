@@ -18,16 +18,15 @@ Figure 1: Line tracking
 Figure 2: Obstacle avoidance
 </p>
 
-
 <table>
   <tr>
     <td align="center">
-      <img src="Image/DS18B20 temperature sensor.jpg" width="200"><br>
-      <p>Figure 8: DS18B20 Temperature Sensor</p>
+      <img src="Image/Line tracking.gif" width="300" alt="Line Tracking"><br>
+      <strong>Figure 1: Line tracking</strong>
     </td>
     <td align="center">
-      <img src="Image/XD-7082 Peltier cooling plate.jpg" width="200"><br>
-      <p>Figure 9: XD-7082 Peltier Cooling Plate</p>
+      <img src="Image/Obstacle avoidance.gif" width="300" alt="Obstacle Avoidance"><br>
+      <strong>Figure 2: Obstacle avoidance</strong>
     </td>
   </tr>
 </table>
@@ -43,7 +42,7 @@ Figure 2: Obstacle avoidance
 
 
 <div align="center">
-  <img src="Image/Raspberry Pi 4B.png" width="300" alt="Raspberry Pi 4B">
+  <img src="Image/Raspberry Pi 4B.png" width="400" alt="Raspberry Pi 4B">
 </div>
 
 <p align="center">
