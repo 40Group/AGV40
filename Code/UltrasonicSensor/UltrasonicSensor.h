@@ -6,44 +6,44 @@
 #include <memory>
 #include <chrono>
 
-class TimerManager; // 前向声明
+class TimerManager; // Forward declaration
 
 class UltrasonicSensor {
 private:
-    // GPIO 配置
+    // GPIO Configuration
     int trigger_pin_;
     int echo_pin_;
     std::string chip_path_;
     
-    // gpiod 对象
+    // gpiod Object
     std::unique_ptr<gpiod::chip> gpio_chip_;
     std::unique_ptr<gpiod::line> trigger_line_;
     std::unique_ptr<gpiod::line> echo_line_;
     
-    // 状态数据
+    // Status data
     std::atomic<double> last_distance_;
     std::atomic<bool> obstacle_detected_;
     std::atomic<bool> measurement_active_;
     
-    // 回调系统
+    // Callback system
     ObstacleCallback obstacle_callback_;
     std::mutex callback_mutex_;
     
-    // 配置参数
+    // Configuration parameters
     double obstacle_threshold_cm_;
     
-    // 测距状态
+    // Ranging status
     std::chrono::high_resolution_clock::time_point echo_start_time_;
     std::mutex measurement_mutex_;
     
-    // TimerManager引用
+    // TimerManager References
     TimerManager* timer_manager_;
     
-    // GPIO中断处理
+    // GPIO Interrupt handling
     void handleEchoRisingEdge();
     void handleEchoFallingEdge();
     
-    // 内部方法
+    // Internal methods
     void setupGPIO();
     void triggerMeasurement();
     void calculateDistance(std::chrono::microseconds pulse_duration);
@@ -54,25 +54,25 @@ public:
                      const std::string& chip_path = "/dev/gpiochip0");
     ~UltrasonicSensor();
     
-    // 初始化
+    // initialization
     bool initialize(TimerManager* timer_manager);
     
-    // 事件驱动启动（注册定时测距事件）
+    // Event-driven startup (registering timed ranging events)
     void startEventDriven();
     void stopEventDriven();
     
-    // 回调注册
+    // Callback Registration
     void registerCallback(ObstacleCallback callback);
     
-    // 状态查询
+    // Status Query
     double getDistance() const;
     bool isObstacleDetected() const;
     bool isMeasurementActive() const;
     
-    // 配置
+    // Configuration
     void setObstacleThreshold(double threshold_cm);
     
-    // 手动触发测距（用于测试）
+    // Manual trigger ranging (for testing)
     void requestMeasurement();
 };
 
