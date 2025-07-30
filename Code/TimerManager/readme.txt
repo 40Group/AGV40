@@ -1,53 +1,83 @@
-Purpose: High-precision timer management for system scheduling
+Real Event-Driven Timer Manager Module
 
-Files:
-- TimerManager.h: Class declaration
-- TimerManager.cpp: Implementation
-- test_timer.cpp: Unit test program
-- readme.txt: This file
+PURPOSE:
+Hardware-precision event scheduling system using REAL event-driven architecture (NO POLLING)
 
-Compilation:
-g++ -std=c++17 test_timer.cpp TimerManager.cpp -o timer_test -lpthread
 
-Run Test:
-./timer_test
+FEATURES:
+Real event-driven timing (NO polling loops)
+Priority queue event scheduling
+Condition variable driven execution
+Microsecond precision timing
+Thread-safe event management
+Automatic event cleanup
 
-Features Tested:
-- Timer creation and management
-- Repeating and one-shot timers
-- Timer pause/resume functionality
-- Batch timer operations
-- High-frequency timing (up to 100Hz)
-- Timer remaining time queries
-- Performance benchmarking
-- Concurrent timer execution
+REAL EVENT-DRIVEN OPERATION:
+Priority queue for event scheduling (not polling!)
+Condition variable blocking until next event
+sleep_until() for precise timing (not sleep() intervals)
+Immediate event execution without polling
+Zero CPU usage when no events pending
 
-Timer Capabilities:
-- Microsecond precision timing
-- Unlimited concurrent timers
-- Thread-safe operations
-- Automatic cleanup
-- Exception-safe callbacks
+TIMER TYPES:
+Repeating Timer: Auto-reschedules next event after execution
+One-Shot Timer: Single event execution then cleanup
+Immediate Event: Instant callback execution
+Delayed Event: One-shot timer with specific delay
 
-Performance Specifications:
-- Timer resolution: 1ms minimum
-- Maximum frequency: 1000Hz
-- Creation overhead: <100μs per timer
-- Memory efficient: minimal per-timer overhead
-- CPU efficient: event-driven execution
+API USAGE (Event-Driven):
+Create repeating: int id = manager.scheduleRepeating(100, callback)
+Create one-shot: int id = manager.scheduleOnce(500, callback)
+Immediate event: manager.triggerImmediateEvent(callback)
+Delayed event: manager.scheduleDelayedEvent(callback, delay)
+Remove timer: manager.removeTimer(id)
 
-Medical Device Applications:
-- Sensor polling schedules
-- Control loop timing
-- Safety check intervals
-- Data logging periods
-- Real-time task scheduling
+EVENT SCHEDULING FLOW:
+Timer created → Event added to priority queue
+Condition variable notifies event thread
+Thread sleeps until next event time (sleep_until)
+Event executed immediately when time reached
+Repeating timers reschedule next event
+One-shot timers auto-cleanup
 
-Advanced Features:
-- Priority-based execution
-- Timer statistics tracking
-- Batch operations support
-- Graceful shutdown handling
-- Professional timing precision
-Conclusion:
-TimerManager provides a rich set of APIs for creating, controlling and managing timers, including one-time and recurring timer creation (e.g., createTimer, createOneShotTimer), status query (e.g., isTimerActive, getTimerRemaining), and timer canceling, pausing, resuming and other functions, as well as supporting batch operations on all timers. Internally, all timers are stored through a shared pointer vector containing TimerInfo, and the timer thread periodically looks for the next due timer, and efficiently implements the wait and wake mechanism via std::condition_variable for precise and efficient time control.
+CALLBACK REQUIREMENTS:
+Must return quickly (< 1ms recommended)
+No blocking operations allowed
+Exception-safe implementation required
+Thread-safe if accessing shared data
+
+PERFORMANCE SPECIFICATIONS:
+Timer resolution: 1μs theoretical (system limited)
+Event scheduling overhead: <10μs
+Callback latency: <100μs typical
+Maximum concurrent timers: System memory limited
+CPU usage when idle: Near zero (event-driven)
+
+EVENT TIMING PRECISION:
+Uses std::chrono::steady_clock for monotonic timing
+sleep_until() for precise event scheduling
+Priority queue ensures correct event ordering
+Condition variables for immediate event notification
+No drift accumulation (each event scheduled independently)
+
+USAGE PATTERNS:
+Sensor control: scheduleRepeating(100ms, readSensor)
+Timeout handling: scheduleOnce(5000ms, timeoutCallback)
+Immediate response: triggerImmediateEvent(emergencyCallback)
+Delayed action: scheduleDelayedEvent(shutdownCallback, 2000ms)
+
+INTEGRATION WITH OTHER MODULES:
+// Temperature control events
+timer.scheduleRepeating(1000, [&tempController]() {
+    tempController.processTemperatureControlEvent();
+});
+
+// Safety monitoring events  
+timer.scheduleRepeating(500, [&safety]() {
+    safety.checkOperationTimeEvent();
+});
+
+// Vision processing events
+timer.scheduleRepeating(100, [&vision]() {
+    vision.processVisionEvent();
+});
