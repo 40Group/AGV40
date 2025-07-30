@@ -42,7 +42,7 @@ private:
     void testInitialization() {
         std::cout << "Testing event-driven vision initialization..." << std::endl;
         
-        // 启动TimerManager
+        // Start TimerManager
         if (!timer_manager_.initialize()) {
             std::cout << "❌ TimerManager initialization failed" << std::endl;
             test_passed_ = false;
@@ -50,7 +50,7 @@ private:
         }
         timer_manager_.start();
         
-        // 初始化视觉跟踪器
+        // Initialising the visual tracker
         bool init_result = tracker_.initialize(&timer_manager_);
         if (!init_result) {
             std::cout << "❌ Event-driven vision tracker initialization failed" << std::endl;
@@ -59,7 +59,7 @@ private:
             return;
         }
         
-        // 检查初始状态
+        // Checking the initial status
         bool initial_line = tracker_.isLineDetected();
         double initial_deviation = tracker_.getLineDeviation();
         
@@ -77,13 +77,13 @@ private:
     void testEventDrivenCapture() {
         std::cout << "Testing event-driven frame capture..." << std::endl;
         
-        // 启动事件驱动模式
+        // Activate event-driven mode
         tracker_.startEventDriven();
         
-        // 等待自动捕获和处理
+        // Waiting for automatic capture and processing
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         
-        // 验证处理状态
+        // Verify processing status
         bool line_status = tracker_.isLineDetected();
         double deviation = tracker_.getLineDeviation();
         bool processing = tracker_.isProcessingActive();
@@ -104,12 +104,12 @@ private:
     void testLineDetection() {
         std::cout << "Testing event-driven line detection..." << std::endl;
         
-        // 收集多个检测样本
+        // Collection of multiple test samples
         int detection_count = 0;
         std::vector<double> deviations;
         
         for (int i = 0; i < 10; i++) {
-            // 手动请求帧捕获测试
+            // Manual Request Frame Capture Test
             tracker_.requestFrameCapture();
             std::this_thread::sleep_for(std::chrono::milliseconds(150));
             
@@ -122,7 +122,7 @@ private:
             deviations.push_back(dev);
         }
         
-        // 分析检测结果
+        // Analysing test results
         double avg_deviation = 0.0;
         for (double dev : deviations) {
             avg_deviation += dev;
@@ -141,19 +141,19 @@ private:
     void testColorConfiguration() {
         std::cout << "Testing color configuration..." << std::endl;
         
-        // 测试白线检测
+        // Test White Line Detection
         tracker_.setLineColor(cv::Scalar(0, 0, 100), cv::Scalar(180, 30, 255));
         std::this_thread::sleep_for(std::chrono::milliseconds(300));
         
         double white_deviation = tracker_.getLineDeviation();
         
-        // 测试蓝线检测
+        // Testing Blue Line Detection
         tracker_.setLineColor(cv::Scalar(100, 50, 50), cv::Scalar(130, 255, 255));
         std::this_thread::sleep_for(std::chrono::milliseconds(300));
         
         double blue_deviation = tracker_.getLineDeviation();
         
-        // 测试Canny阈值调整
+        // Testing Canny Threshold Adjustment
         tracker_.setCannyThresholds(30, 100);
         std::this_thread::sleep_for(std::chrono::milliseconds(300));
         
@@ -172,7 +172,7 @@ private:
         line_detected_ = false;
         last_deviation_ = 0.0;
         
-        // 注册回调
+        // Register a callback
         tracker_.registerCallback([this](bool detected, double deviation) {
             callback_count_++;
             line_detected_ = detected;
@@ -181,7 +181,7 @@ private:
                      << ", Deviation=" << deviation << std::endl;
         });
         
-        // 手动触发几次处理
+        // Manually triggered several times for processing
         for (int i = 0; i < 5; i++) {
             tracker_.requestFrameCapture();
             std::this_thread::sleep_for(std::chrono::milliseconds(200));
@@ -207,7 +207,7 @@ private:
         
         auto start_time = std::chrono::steady_clock::now();
         
-        // 测试连续处理性能
+        // Testing Continuous Processing Performance
         for (int i = 0; i < 10; i++) {
             tracker_.requestFrameCapture();
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -217,7 +217,7 @@ private:
         auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(
             end_time - start_time);
         
-        // 验证处理延迟
+        // Verification Processing Delay
         bool processing = tracker_.isProcessingActive();
         
         std::cout << "✅ Event-driven performance test completed" << std::endl;
