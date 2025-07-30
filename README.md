@@ -44,11 +44,27 @@ Figure 4: Raspberry Pi Camera
 </p>
 
 <div align="center">
+  <img src="Image/Infraed Sensor.jpg" width="200" alt="Infraed Sensor">
+</div>
+
+<p align="center">
+Figure 5: Infraed Sensor
+</p>
+
+<div align="center">
+  <img src="Image/Ultra Sensor.jpg" width="200" alt="Ultra Sensor">
+</div>
+
+<p align="center">
+Figure 6: Ultra Sensor
+</p>
+
+<div align="center">
   <img src="Image/MOSFET driver module&PTC heater.jpg" width="200" alt="MOSFET Driver Module and PTC Heater">
 </div>
 
 <p align="center">
-Figure 5: MOSFET driver module & PTC heater
+Figure 7: MOSFET driver module & PTC heater
 </p>
 
 <div align="center">
@@ -56,7 +72,7 @@ Figure 5: MOSFET driver module & PTC heater
 </div>
 
 <p align="center">
-Figure 6: DS18B20 temperature sensor
+Figure 8: DS18B20 temperature sensor
 </p>
 
 <div align="center">
@@ -64,7 +80,7 @@ Figure 6: DS18B20 temperature sensor
 </div>
 
 <p align="center">
-Figure 7: XD-7082 Peltier cooling plate
+Figure 9: XD-7082 Peltier cooling plate
 </p>
 
 
