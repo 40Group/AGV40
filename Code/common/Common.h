@@ -63,7 +63,7 @@ using BoundaryCallback = std::function<void(bool leftDetected, bool rightDetecte
 // Global system state
 extern std::atomic<SystemState> g_system_state;
 extern std::atomic<bool> g_emergency_stop;
-extern std::atomic<bool> g_running;  // 添加全局运行标志
+extern std::atomic<bool> g_running; 
 
 // Log Hong
 #define LOG_INFO(msg) std::cout << "[INFO] " << msg << std::endl
