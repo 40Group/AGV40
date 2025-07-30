@@ -41,7 +41,7 @@ private:
     void testInitialization() {
         std::cout << "Testing event-driven initialization..." << std::endl;
         
-        // 启动TimerManager
+        // start TimerManager
         if (!timer_manager_.initialize()) {
             std::cout << "❌ TimerManager initialization failed" << std::endl;
             test_passed_ = false;
@@ -49,7 +49,7 @@ private:
         }
         timer_manager_.start();
         
-        // 初始化传感器
+        // Initialize the sensor
         bool init_result = sensor_.initialize(&timer_manager_);
         if (!init_result) {
             std::cout << "❌ Event-driven ultrasonic sensor initialization failed" << std::endl;
@@ -63,10 +63,10 @@ private:
     void testEventDrivenMeasurement() {
         std::cout << "Testing event-driven measurement..." << std::endl;
         
-        // 启动事件驱动模式
+        // Start event-driven mode
         sensor_.startEventDriven();
         
-        // 等待几次自动测量
+        // Wait for several automatic measurements
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         
         double distance = sensor_.getDistance();
@@ -84,10 +84,10 @@ private:
     void testObstacleDetection() {
         std::cout << "Testing event-driven obstacle detection..." << std::endl;
         
-        // 设置测试阈值
+        // Setting the test threshold
         sensor_.setObstacleThreshold(30.0);
         
-        // 等待测量更新
+        // Waiting for measurement update
         std::this_thread::sleep_for(std::chrono::milliseconds(500));
         
         double distance = sensor_.getDistance();
@@ -105,7 +105,7 @@ private:
         
         callback_count_ = 0;
         
-        // 注册回调
+        // Register callback
         sensor_.registerCallback([this](bool detected, double distance) {
             callback_count_++;
             obstacle_detected_ = detected;
@@ -114,7 +114,7 @@ private:
                      << (detected ? "Yes" : "No") << std::endl;
         });
         
-        // 测试不同阈值触发回调
+        // Test different threshold trigger callbacks
         sensor_.setObstacleThreshold(10.0);
         std::this_thread::sleep_for(std::chrono::milliseconds(300));
         
@@ -136,7 +136,7 @@ private:
         auto start_time = std::chrono::steady_clock::now();
         double initial_distance = sensor_.getDistance();
         
-        // 等待10次测量周期 (100ms * 10 = 1s)
+        //  Wait for 10 measurement cycles(100ms * 10 = 1s)
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         
         auto end_time = std::chrono::steady_clock::now();
@@ -145,8 +145,8 @@ private:
         
         double final_distance = sensor_.getDistance();
         
-        // 验证性能
-        if (duration.count() > 1200) {  // 允许20%误差
+        // Verify performance
+        if (duration.count() > 1200) {  // Allow 20% error
             std::cout << "⚠️ Performance test timing exceeded expected range" << std::endl;
         }
         
