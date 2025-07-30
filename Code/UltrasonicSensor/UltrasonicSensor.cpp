@@ -22,7 +22,7 @@ bool UltrasonicSensor::initialize(TimerManager* timer_manager) {
         
         timer_manager_ = timer_manager;
         
-        // 初始化GPIO芯片
+        // Initialize the GPIO chip
         gpio_chip_ = std::make_unique<gpiod::chip>(chip_path_);
         if (!gpio_chip_->is_used()) {
             LOG_ERROR("Failed to initialize GPIO chip: " + chip_path_);
@@ -41,7 +41,7 @@ bool UltrasonicSensor::initialize(TimerManager* timer_manager) {
 }
 
 void UltrasonicSensor::setupGPIO() {
-    // 配置trigger引脚为输出
+    // Configure the trigger pin as output
     trigger_line_ = std::make_unique<gpiod::line>(gpio_chip_->get_line(trigger_pin_));
     gpiod::line_request trigger_config = {
         "ultrasonic_trigger",
@@ -50,7 +50,7 @@ void UltrasonicSensor::setupGPIO() {
     };
     trigger_line_->request(trigger_config);
     
-    // 配置echo引脚为输入，启用边沿中断
+    // Configure the echo pin as input and enable edge interrupt
     echo_line_ = std::make_unique<gpiod::line>(gpio_chip_->get_line(echo_pin_));
     gpiod::line_request echo_config = {
         "ultrasonic_echo",
@@ -69,11 +69,11 @@ void UltrasonicSensor::startEventDriven() {
         return;
     }
     
-    // 注册GPIO中断处理
+    // Register GPIO interrupt processing
     std::thread echo_monitor([this]() {
         while (!g_emergency_stop.load()) {
             try {
-                // 等待echo引脚中断事件
+                // Wait for the echo pin interrupt event
                 if (echo_line_->event_wait(std::chrono::milliseconds(100))) {
                     auto event = echo_line_->event_read();
                     
@@ -91,7 +91,7 @@ void UltrasonicSensor::startEventDriven() {
     });
     echo_monitor.detach();
     
-    // 注册定时测距事件（10Hz频率）
+    // Register for timed ranging events (10Hz frequency)
     timer_manager_->scheduleRepeating(100, [this]() {
         requestMeasurement();
     });
@@ -100,30 +100,30 @@ void UltrasonicSensor::startEventDriven() {
 }
 
 void UltrasonicSensor::stopEventDriven() {
-    // TimerManager会自动清理定时器事件
+    // TimerManager will automatically clean up timer events
     LOG_INFO("UltrasonicSensor stopped");
 }
 
 void UltrasonicSensor::requestMeasurement() {
     if (measurement_active_.load()) {
-        return; // 上次测量还未完成
+        return; // The last measurement has not been completed
     }
     
     std::lock_guard<std::mutex> lock(measurement_mutex_);
     measurement_active_ = true;
     
-    // 启动测距序列
+    // Start ranging sequence
     triggerMeasurement();
 }
 
 void UltrasonicSensor::triggerMeasurement() {
     try {
-        // 发送10μs触发脉冲
+        // Send 10μs trigger pulse
         trigger_line_->set_value(1);
         std::this_thread::sleep_for(std::chrono::microseconds(10));
         trigger_line_->set_value(0);
         
-        // 设置超时保护
+        // Setting timeout protection
         timer_manager_->scheduleOnce(50, [this]() {
             if (measurement_active_.load()) {
                 LOG_WARNING("Ultrasonic measurement timeout");
@@ -142,7 +142,7 @@ void UltrasonicSensor::handleEchoRisingEdge() {
         return;
     }
     
-    // 记录echo开始时间
+    // Record echo start time
     echo_start_time_ = std::chrono::high_resolution_clock::now();
 }
 
@@ -151,23 +151,23 @@ void UltrasonicSensor::handleEchoFallingEdge() {
         return;
     }
     
-    // 计算脉冲持续时间
+    // Calculating pulse duration
     auto echo_end_time = std::chrono::high_resolution_clock::now();
     auto pulse_duration = std::chrono::duration_cast<std::chrono::microseconds>(
         echo_end_time - echo_start_time_);
     
     measurement_active_ = false;
     
-    // 计算距离
+    // Calculating distance
     calculateDistance(pulse_duration);
 }
 
 void UltrasonicSensor::calculateDistance(std::chrono::microseconds pulse_duration) {
     try {
-        // 声速计算：distance = (pulse_time * 0.034) / 2
+        // Sound speed calculation: distance = (pulse_time * 0.034) / 2
         double distance_cm = (pulse_duration.count() * 0.034) / 2.0;
         
-        // 验证测量范围
+        // Verify measurement range
         if (distance_cm > 0 && distance_cm < 400) {
             processDistanceResult(distance_cm);
         } else {
@@ -180,19 +180,19 @@ void UltrasonicSensor::calculateDistance(std::chrono::microseconds pulse_duratio
 }
 
 void UltrasonicSensor::processDistanceResult(double distance) {
-    // 更新距离数据
+    // Update distance data
     last_distance_ = distance;
     
-    // 障碍物检测
+    // Obstacle Detection
     bool obstacle = (distance < obstacle_threshold_cm_);
     bool prev_obstacle = obstacle_detected_.load();
     obstacle_detected_ = obstacle;
     
-    // 触发回调（状态变化时）
+    // Trigger callback (when state changes)
     if (obstacle != prev_obstacle) {
         std::lock_guard<std::mutex> lock(callback_mutex_);
         if (obstacle_callback_) {
-            // 在TimerManager的事件线程中执行回调
+            // Execute callback in TimerManager's event thread
             timer_manager_->scheduleOnce(0, [this, obstacle, distance]() {
                 obstacle_callback_(obstacle, distance);
             });
