@@ -1,60 +1,65 @@
 # Vision Tracker Module
 
-## Purpose: Real-time line detection for medical car navigation
+## Purpose: True event-driven computer vision system for line following with GPIO integration and timer-based frame processing for Smart Medical Car autonomous navigation.
 
-## Files:
-- VisionTracker.hpp: Class declaration
-- VisionTracker.cpp: Implementation  
-- test_vision.cpp: Unit test program
-- readme.txt: This file
+## ARCHITECTURE:
+✅ Pure Event-Driven Design - No processing loops
+✅ Timer-Triggered Capture - Scheduled frame acquisition
+✅ GPIO Hardware Integration - External trigger capability
+✅ Callback Response System - Immediate navigation events
+✅ OpenCV + gpiod.hpp - Modern CV with Linux GPIO
+
+## EVENT FLOW
+1. TimerManager triggers frame capture request (10Hz)
+2. Camera frame captured asynchronously
+3. Frame stored and processing event scheduled
+4. Image processing executed in event context
+5. Line detection results trigger navigation callback
+6. Optional GPIO external trigger for sync capture
 
 ## Hardware Requirements:
-- Raspberry Pi Camera Module v2
-- OpenCV 4.x library
-- Sufficient lighting for line detection
+- Raspberry Pi Camera Module v2 or USB Camera
+- GPIO trigger pin: GPIO 25 (default, configurable)
+- GPIO chip: /dev/gpiochip0 (default)
+- Adequate lighting for line visibility
+- Stable camera mounting with vibration isolation
 
-## Compilation:
-g++ 
--std=c++17 
-test_vision.cpp VisionTracker.cpp 
--o vision_test 
--lopencv_core 
--lopencv_imgproc 
--lopencv_imgcodecs 
--lopencv_videoio 
--lopencv_highgui 
--lwiringPi 
--lpthread
+## REAL-TIME FEATURES:
+- Event-driven frame processing
+- Zero polling overhead for CPU efficiency  
+- Immediate callback response to line changes
+- Asynchronous image processing pipeline
+- Hardware trigger synchronization capability
 
-## Run Test:
-./vision_test
+## EVENT-DRIVEN API:
+```cpp
+// Initialization with TimerManager dependency
+tracker.initialize(&timer_manager);
 
-## Features Tested:
-- Camera initialization and configuration
-- Real-time frame processing
-- Line detection using Hough transform
-- Offset and angle calculation
-- Performance monitoring
-- Debug frame saving
+// Start event-driven mode (registers timer + GPIO events)
+tracker.startEventDriven();
 
-## Performance Requirements:
-- Target processing time: <50ms per frame
-- Real-time compliance: >95%
-- Minimum detection confidence: 0.7
+// Register line detection callback
+tracker.registerCallback([](bool detected, double deviation) {
+    if (detected) {
+        if (abs(deviation) > 0.1) {
+            motor_controller.adjustSteering(deviation);
+        } else {
+            motor_controller.driveStraight();
+        }
+    } else {
+        motor_controller.searchForLine();
+    }
+});
 
-## Algorithm Details:
-- Grayscale conversion
-- Gaussian blur for noise reduction
-- Adaptive thresholding
-- Morphological operations
-- Hough line detection
-- Line filtering and analysis
+// Configuration
+tracker.setLineColor(hsv_min, hsv_max);  // Color-based detection
+tracker.setCannyThresholds(50, 150);     // Edge detection tuning
 
-## Medical Navigation Features:
-- ROI-based processing for efficiency
-- Confidence-based reliability
-- Angle-based navigation guidance
-- Real-time performance monitoring
+// Query current state (thread-safe)
+bool line = tracker.isLineDetected();
+double dev = tracker.getLineDeviation();
+bool active = tracker.isProcessingActive();
 
 ## All in all
-This vision tracking module is built on OpenCV and performs image preprocessing through grayscale conversion, filtering, adaptive thresholding, and morphological operations. It applies ROI-based masking and probabilistic Hough transform for efficient line detection, then extracts key navigation metrics such as lateral offset, orientation angle, and detection confidence. Additionally, integrated performance monitoring ensures that frame rate and latency meet the real-time and stability requirements of smart medical vehicle navigation.
+This is a high-performance, low-latency, fully asynchronous vision recognition module, designed for fast-response embedded autonomous navigation systems, and particularly well-suited for line-following applications in smart medical transport vehicles.
