@@ -1,81 +1,79 @@
 #ifndef TIMERMANAGER_H
 #define TIMERMANAGER_H
 
-#include "Common.h"
+#include "../common/Common.h"
+#include <map>
+#include <queue>
+#include <condition_variable>
 
 class TimerManager {
-public:
-    using TimerCallback = std::function<void()>;
-    
-    struct TimerInfo {
-        uint32_t id;
+private:
+    struct TimerEvent {
+        int timer_id;
+        std::chrono::steady_clock::time_point trigger_time;
         std::chrono::milliseconds interval;
         TimerCallback callback;
-        bool repeating;
+        bool repeat;
         bool active;
-        std::chrono::steady_clock::time_point next_execution;
-        std::chrono::steady_clock::time_point created_time;
+        
+        TimerEvent(int id, std::chrono::steady_clock::time_point trigger, 
+                  std::chrono::milliseconds int_val, TimerCallback cb, bool rep)
+            : timer_id(id), trigger_time(trigger), interval(int_val), 
+              callback(cb), repeat(rep), active(true) {}
+        
+        // Priority queue sorting: The earliest triggered event takes precedence
+        bool operator<(const TimerEvent& other) const {
+            return trigger_time > other.trigger_time;  
+        }
     };
-
-private:
+    
+    // Real-world event-driven components
+    std::thread event_thread_;
     std::atomic<bool> running_;
-    std::atomic<uint32_t> next_timer_id_;
     
-    std::vector<std::shared_ptr<TimerInfo>> timers_;
+    // Event-driven priority queues
+    std::priority_queue<TimerEvent> event_queue_;
+    std::mutex queue_mutex_;
+    std::condition_variable event_condition_;
+    
+    // Timer management
+    std::map<int, bool> active_timers_;  
     std::mutex timers_mutex_;
+    std::atomic<int> next_timer_id_;
     
-    std::thread timer_thread_;
-    std::condition_variable timer_cv_;
+    // Real-world event-driven approach
+    void realEventDrivenLoop();
+    void scheduleNextTimerEvent(const TimerEvent& event);
+    void processTimerEvent(const TimerEvent& event);
     
-    // The timer manages the main loop
-    void timerLoop();
-    
-    // Get the next timer that needs to be executed
-    std::shared_ptr<TimerInfo> getNextTimer();
-
 public:
     TimerManager();
     ~TimerManager();
     
+    // Initialization and control
     bool initialize();
-    void shutdown();
+    void start();
+    void stop();
     
-    // Timer creation and management
-    uint32_t createTimer(std::chrono::milliseconds interval, 
-                        TimerCallback callback, 
-                        bool repeating = true);
+    // Event-driven timer management
+    int createTimer(std::chrono::milliseconds interval, TimerCallback callback, bool repeat = true);
+    int createOneShotTimer(std::chrono::milliseconds delay, TimerCallback callback);
+    void removeTimer(int timer_id);
+    void pauseTimer(int timer_id);
+    void resumeTimer(int timer_id);
     
-    uint32_t createOneShotTimer(std::chrono::milliseconds delay, 
-                               TimerCallback callback);
+    // Convenient way
+    int scheduleRepeating(int interval_ms, TimerCallback callback);
+    int scheduleOnce(int delay_ms, TimerCallback callback);
     
-    bool cancelTimer(uint32_t timer_id);
-    bool pauseTimer(uint32_t timer_id);
-    bool resumeTimer(uint32_t timer_id);
-    
-    // Timer status query
-    bool isTimerActive(uint32_t timer_id);
-    std::chrono::milliseconds getTimerRemaining(uint32_t timer_id);
-    size_t getActiveTimerCount();
-    
-    // Bulk operations
-    void cancelAllTimers();
-    void pauseAllTimers();
-    void resumeAllTimers();
+    // Trigger an event immediately
+    void triggerImmediateEvent(TimerCallback callback);
+    void scheduleDelayedEvent(TimerCallback callback, std::chrono::milliseconds delay);
     
     // Status inquiry
-    bool isRunning() const { return running_.load(); }
-    
-    // Statistics
-    struct TimerStats {
-        size_t total_timers;
-        size_t active_timers;
-        size_t paused_timers;
-        std::chrono::steady_clock::time_point uptime;
-    };
-    TimerStats getStats() const;
-    
-    // Test Method:
-    bool selfTest();
+    bool isTimerActive(int timer_id);
+    int getActiveTimerCount();
+    int getPendingEventCount();
 };
 
 #endif // TIMERMANAGER_H
