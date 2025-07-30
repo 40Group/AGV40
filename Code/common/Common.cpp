@@ -14,7 +14,7 @@
 // // Global variable definition (thread-safe atomic variables)
 // std::atomic<SystemState> g_system_state{SystemState::INITIALIZING};
 // std::atomic<bool> g_emergency_stop{false};
-// std::atomic<bool> g_running{false};  // 新增：全局运行控制
+// std::atomic<bool> g_running{false};  
 
 // The commented out monitoring code is left
 // #include "../include/Common.h"
