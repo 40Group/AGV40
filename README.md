@@ -22,11 +22,11 @@ Figure 2: Obstacle avoidance
   <table>
     <tr>
       <td align="center">
-        <img src="Image/Line tracking.gif" width="300" alt="Line Tracking"><br>
+        <img src="Image/Line tracking.gif" width="400" alt="Line Tracking"><br>
         <p><strong>Figure 1: Line tracking</strong></p>
       </td>
       <td align="center">
-        <img src="Image/Obstacle avoidance.gif" width="300" alt="Obstacle Avoidance"><br>
+        <img src="Image/Obstacle avoidance.gif" width="200" alt="Obstacle Avoidance"><br>
         <p><strong>Figure 2: Obstacle avoidance</strong></p>
       </td>
     </tr>
