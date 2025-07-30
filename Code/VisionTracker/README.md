@@ -4,9 +4,13 @@
 
 ## ARCHITECTURE:
 ✅ Pure Event-Driven Design - No processing loops
+
 ✅ Timer-Triggered Capture - Scheduled frame acquisition
+
 ✅ GPIO Hardware Integration - External trigger capability
+
 ✅ Callback Response System - Immediate navigation events
+
 ✅ OpenCV + gpiod.hpp - Modern CV with Linux GPIO
 
 ## EVENT FLOW
@@ -30,6 +34,9 @@
 - Immediate callback response to line changes
 - Asynchronous image processing pipeline
 - Hardware trigger synchronization capability
+
+## All in all
+This is a high-performance, low-latency, fully asynchronous vision recognition module, designed for fast-response embedded autonomous navigation systems, and particularly well-suited for line-following applications in smart medical transport vehicles.
 
 ## EVENT-DRIVEN API:
 ```cpp
@@ -60,6 +67,3 @@ tracker.setCannyThresholds(50, 150);     // Edge detection tuning
 bool line = tracker.isLineDetected();
 double dev = tracker.getLineDeviation();
 bool active = tracker.isProcessingActive();
-
-## All in all
-This is a high-performance, low-latency, fully asynchronous vision recognition module, designed for fast-response embedded autonomous navigation systems, and particularly well-suited for line-following applications in smart medical transport vehicles.
