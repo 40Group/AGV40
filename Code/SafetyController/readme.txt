@@ -119,3 +119,6 @@ CRITICAL: This is TRUE event-driven safety system
 - ONLY hardware interrupts and callbacks
 - REAL-TIME emergency response
 - Hardware-verified safety events
+
+ALL IN ALL:
+The SafetyController module is responsible for handling safety-related functions within the embedded system. It monitors critical system components including vision tracking, ultrasonic distance sensing, and temperature control to ensure reliable and secure operation. A dedicated hardware interrupt is configured for the emergency stop button using the gpiod library, allowing the system to respond immediately to user intervention. The module supports customizable callbacks to define specific behaviors when emergency conditions occur, such as overheating, obstacle proximity, or extended runtime. It tracks the health status of each subsystem and automatically triggers safety routines when necessary. The accompanying test file, test_safety.cpp, is designed to validate the emergency detection logic, timing accuracy, and callback behavior under different conditions. In addition, the module integrates real-time logging and system reset capabilities, making it suitable for use in autonomous vehicles, mobile robots, and other safety-critical applications where immediate response to hazards is essential.
