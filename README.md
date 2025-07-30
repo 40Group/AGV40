@@ -18,18 +18,20 @@ Figure 1: Line tracking
 Figure 2: Obstacle avoidance
 </p>
 
-<table>
-  <tr>
-    <td align="center">
-      <img src="Image/Line tracking.gif" width="300" alt="Line Tracking"><br>
-      <strong>Figure 1: Line tracking</strong>
-    </td>
-    <td align="center">
-      <img src="Image/Obstacle avoidance.gif" width="300" alt="Obstacle Avoidance"><br>
-      <strong>Figure 2: Obstacle avoidance</strong>
-    </td>
-  </tr>
-</table>
+<div align="center">
+  <table>
+    <tr>
+      <td align="center">
+        <img src="Image/Line tracking.gif" width="300" alt="Line Tracking"><br>
+        <p><strong>Figure 1: Line tracking</strong></p>
+      </td>
+      <td align="center">
+        <img src="Image/Obstacle avoidance.gif" width="300" alt="Obstacle Avoidance"><br>
+        <p><strong>Figure 2: Obstacle avoidance</strong></p>
+      </td>
+    </tr>
+  </table>
+</div>
 
 
 ## 2. Hardware and Component Selection
