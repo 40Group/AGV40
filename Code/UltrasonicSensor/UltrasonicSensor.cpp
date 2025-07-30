@@ -46,7 +46,7 @@ void UltrasonicSensor::setupGPIO() {
     gpiod::line_request trigger_config = {
         "ultrasonic_trigger",
         gpiod::line_request::DIRECTION_OUTPUT,
-        0  // 初始低电平
+        0  // Initial low level
     };
     trigger_line_->request(trigger_config);
     
