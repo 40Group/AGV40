@@ -32,7 +32,7 @@ bool initializeSystem() {
     LOG_INFO("Initializing Smart Medical Car System (Event-Driven)...");
     
     try {
-        // 首先创建TimerManager - 其他模块都依赖它
+        // Create TimerManager
         g_timer = std::make_unique<TimerManager>();
         if (!g_timer->initialize()) {
             LOG_ERROR("TimerManager initialization failed");
@@ -40,7 +40,7 @@ bool initializeSystem() {
         }
         g_timer->start();
         
-        // 创建所有组件
+        // Create all components
         g_motor = std::make_unique<MotorController>();
         g_vision = std::make_unique<VisionTracker>();
         g_ultrasonic = std::make_unique<UltrasonicSensor>();
@@ -48,7 +48,7 @@ bool initializeSystem() {
         g_temperature = std::make_unique<TemperatureController>();
         g_safety = std::make_unique<SafetyController>();
         
-        // 初始化所有组件（传递TimerManager依赖）
+        // Initialise all components (pass TimerManager dependency)
         if (!g_motor->initialize(g_timer.get())) {
             LOG_ERROR("MotorController initialization failed");
             return false;
@@ -92,7 +92,7 @@ bool initializeSystem() {
 void setupCallbacks() {
     LOG_INFO("Setting up event-driven callbacks...");
     
-    // 视觉跟踪回调 - 控制小车循迹
+    // Visual tracking callback - Control the car to follow the track
     g_vision->registerCallback([](bool lineDetected, double deviation) {
         g_safety->updateVisionHealth();
         
@@ -112,7 +112,7 @@ void setupCallbacks() {
         }
     });
     
-    // 超声波避障回调
+    // Ultrasonic obstacle avoidance callback
     g_ultrasonic->registerCallback([](bool obstacleDetected, double distance) {
         g_safety->updateUltrasonicHealth();
         
@@ -120,7 +120,7 @@ void setupCallbacks() {
             LOG_WARNING("Obstacle detected at " + std::to_string(distance) + "cm - executing avoidance");
             g_motor->requestMotion(MotionState::STOP);
             
-            // 事件驱动避障序列
+            // Event-driven obstacle avoidance sequence
             g_timer->scheduleOnce(300, []() {
                 if (!g_emergency_stop.load()) {
                     g_motor->requestMotion(MotionState::BACKWARD);
@@ -139,7 +139,7 @@ void setupCallbacks() {
         }
     });
     
-    // 红外边界检测回调
+    // Infrared boundary detection callback
     g_infrared->registerCallback([](bool leftDetected, bool rightDetected) {
         g_safety->updateInfraredHealth();
         
@@ -147,7 +147,7 @@ void setupCallbacks() {
             LOG_WARNING("Boundary detected - executing boundary avoidance");
             g_motor->requestMotion(MotionState::STOP);
             
-            // 事件驱动边界避让
+            // Event-driven boundary avoidance
             g_timer->scheduleOnce(200, [leftDetected, rightDetected]() {
                 if (!g_emergency_stop.load()) {
                     g_motor->requestMotion(MotionState::BACKWARD);
@@ -170,7 +170,7 @@ void setupCallbacks() {
         }
     });
     
-    // 温度控制回调
+    // Temperature control callback
     g_temperature->registerCallback([](double temperature, TempControlState state) {
         g_safety->updateTemperatureHealth();
         
@@ -178,7 +178,7 @@ void setupCallbacks() {
             LOG_WARNING("Temperature alert: " + std::to_string(temperature) + "°C");
         }
         
-        // 温度状态变化日志
+        // Temperature Status Change Log
         static TempControlState last_state = TempControlState::IDLE;
         if (state != last_state) {
             LOG_INFO("Temperature control state: " + std::to_string(static_cast<int>(state)));
@@ -186,26 +186,26 @@ void setupCallbacks() {
         }
     });
     
-    // 安全控制回调
+    // Security control callback
     g_safety->registerCallback([](const std::string& emergency) {
         LOG_ERROR("SAFETY EMERGENCY: " + emergency);
         g_motor->emergencyStop();
         g_emergency_stop.store(true);
     });
     
-    // 配置安全参数
+    // Configure security parameters
     g_safety->setTemperatureLimits(40.0);
     g_safety->setMinimumDistance(5.0);
     g_safety->setMaxOperationTime(180); // 3小时
     
-    // 配置温度控制
+    // Configure temperature control
     g_temperature->setTargetTemperature(25.0);
     
-    // 配置视觉跟踪（白线检测）
+    // Configure visual tracking (white line detection)
     g_vision->setLineColor(cv::Scalar(0, 0, 100), cv::Scalar(180, 30, 255));
     g_vision->setCannyThresholds(50, 150);
     
-    // 配置超声波检测阈值
+    // Configure ultrasonic detection thresholds
     g_ultrasonic->setObstacleThreshold(20.0);
     
     LOG_INFO("All event-driven callbacks configured successfully");
@@ -217,7 +217,7 @@ void startServices() {
     
     g_system_state.store(SystemState::RUNNING);
     
-    // 启动所有事件驱动服务
+    // Start all event-driven services
     g_safety->startEventDriven();
     g_temperature->startEventDriven();
     g_vision->startEventDriven();
@@ -235,7 +235,7 @@ void cleanupSystem() {
     g_system_state.store(SystemState::SHUTDOWN);
     g_emergency_stop.store(true);
     
-    // 停止所有事件驱动服务
+    // Stop all event-driven services
     if (g_motor) g_motor->stopEventDriven();
     if (g_infrared) g_infrared->stopEventDriven();
     if (g_ultrasonic) g_ultrasonic->stopEventDriven();
