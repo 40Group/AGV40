@@ -79,10 +79,10 @@ private:
         emergency_triggered = false;
         int initial_count = emergency_count.load();
         
-        // 触发手动紧急停止（应该立即响应）
+        // Trigger manual emergency stop (should respond immediately)
         safety.manualEmergencyStop();
         
-        // 短暂等待事件处理
+        // Short wait for event processing
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
         
         if (!emergency_triggered.load()) {
@@ -115,11 +115,11 @@ private:
     void testEventDrivenHealthMonitoring() {
         std::cout << "Testing event-driven health monitoring..." << std::endl;
         
-        // 重置紧急状态
+        // Reset emergency status
         safety.resetEmergency();
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
         
-        // 发送健康事件（模拟传感器回调）
+        // Send health events (simulate sensor callbacks)
         safety.updateVisionHealth();
         safety.updateUltrasonicHealth();
         safety.updateTemperatureHealth();
@@ -136,17 +136,17 @@ private:
     void testTemperatureEventTrigger() {
         std::cout << "Testing temperature event trigger..." << std::endl;
         
-        // 重置紧急状态
+        // Reset emergency status
         safety.resetEmergency();
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
         
         emergency_triggered = false;
         int initial_count = emergency_count.load();
         
-        // 设置较低的温度限制
+        // Set a lower temperature limit
         safety.setTemperatureLimits(30.0);
         
-        // 触发温度超限事件（模拟温度传感器回调）
+        // Trigger temperature limit event (simulate temperature sensor callback)
         safety.checkTemperatureEvent(35.0);  // 超过30°C限制
         
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
@@ -175,17 +175,17 @@ private:
     void testObstacleEventTrigger() {
         std::cout << "Testing obstacle event trigger..." << std::endl;
         
-        // 重置紧急状态
+        // Reset emergency status
         safety.resetEmergency();
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
         
         emergency_triggered = false;
         int initial_count = emergency_count.load();
         
-        // 设置最小距离
+        // Set minimum distance
         safety.setMinimumDistance(20.0);
         
-        // 触发障碍物检测事件（模拟超声波传感器回调）
+        // Trigger obstacle detection event (simulate ultrasonic sensor callback)
         safety.checkObstacleEvent(15.0);  // 小于20cm限制
         
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
@@ -214,7 +214,7 @@ private:
     void testEmergencyReset() {
         std::cout << "Testing emergency reset..." << std::endl;
         
-        // 确保处于紧急状态
+        // Ensure that you are in a state of emergency
         safety.manualEmergencyStop();
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
         
@@ -224,7 +224,7 @@ private:
             return;
         }
         
-        // 重置紧急状态
+        // Reset emergency status
         safety.resetEmergency();
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
         
@@ -246,11 +246,11 @@ private:
     void testRealTimeResponse() {
         std::cout << "Testing real-time event response performance..." << std::endl;
         
-        // 重置状态
+        // reset status
         safety.resetEmergency();
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
         
-        // 测试连续快速事件响应
+        // Testing continuous rapid event response
         auto start_time = std::chrono::high_resolution_clock::now();
         
         for (int i = 0; i < 100; i++) {
@@ -259,7 +259,7 @@ private:
                 safety.updateUltrasonicHealth();
                 safety.updateTemperatureHealth();
             } else {
-                // 测试快速重置
+                // Test quick reset
                 safety.resetEmergency();
             }
         }
@@ -272,7 +272,7 @@ private:
         
         std::cout << "Average event processing time: " << avg_event_time << " μs" << std::endl;
         
-        if (avg_event_time > 1000.0) {  // 应该小于1ms
+        if (avg_event_time > 1000.0) {  // shoule less than 1ms
             std::cout << "⚠️ Event response time may be too slow for real-time safety" << std::endl;
         } else {
             std::cout << "✅ Excellent real-time safety event performance" << std::endl;
