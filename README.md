@@ -28,7 +28,7 @@ Figure 2: Obstacle avoidance
 
 
 <div align="center">
-  <img src="Image/Raspberry Pi 4B.png" width="200" alt="Raspberry Pi 4B">
+  <img src="Image/Raspberry Pi 4B.png" width="300" alt="Raspberry Pi 4B">
 </div>
 
 <p align="center">
