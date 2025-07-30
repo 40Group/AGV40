@@ -4,7 +4,7 @@ InfraredSensor::InfraredSensor(int left_pin, int right_pin)
     : left_pin_(left_pin), right_pin_(right_pin),
       running_(false), left_detected_(false), right_detected_(false) {
     
-    // 初始化gpiod组件
+    // Initialize the gpiod component
     chip_ = std::make_unique<gpiod::chip>("gpiochip0");
 }
 
@@ -14,7 +14,7 @@ InfraredSensor::~InfraredSensor() {
 
 bool InfraredSensor::initialize() {
     try {
-        // 获取GPIO线路
+        // Get GPIO lines
         left_line_ = std::make_unique<gpiod::line>(chip_->get_line(left_pin_));
         right_line_ = std::make_unique<gpiod::line>(chip_->get_line(right_pin_));
         
@@ -31,14 +31,14 @@ bool InfraredSensor::initialize() {
 
 void InfraredSensor::setupGPIOEvents() {
     try {
-        // 配置左侧传感器为双边沿中断（真实硬件事件）
+        // Configure the left sensor as a dual-edge interrupt (real hardware event)
         left_line_->request({
             "ir_left_sensor", 
             gpiod::line_request::EVENT_BOTH_EDGES,
             gpiod::line_request::FLAG_BIAS_PULL_UP
         });
         
-        // 配置右侧传感器为双边沿中断（真实硬件事件）
+        // Configure the right sensor as a dual-edge interrupt (real hardware event)
         right_line_->request({
             "ir_right_sensor", 
             gpiod::line_request::EVENT_BOTH_EDGES,
@@ -59,7 +59,7 @@ void InfraredSensor::start() {
     
     running_ = true;
     
-    // 启动真实事件驱动线程
+    // Start the real event-driven thread
     event_thread_ = std::thread(&InfraredSensor::realEventLoop, this);
     
     LOG_INFO("InfraredSensor started with REAL event-driven monitoring");
@@ -80,14 +80,14 @@ void InfraredSensor::realEventLoop() {
     
     while (running_.load() && !g_emergency_stop.load()) {
         try {
-            // 真实事件驱动：同时监听两个GPIO线路的硬件中断
+            // True event-driven: monitoring hardware interrupts from two GPIO lines simultaneously
             std::vector<gpiod::line*> lines = {left_line_.get(), right_line_.get()};
             
-            // 阻塞等待真实硬件事件（超时1秒以检查运行状态）
+            // Block waiting for real hardware events (timeout of 1 second to check running status)
             auto event_lines = gpiod::line::event_wait(lines, std::chrono::seconds(1));
             
             if (!event_lines.empty()) {
-                // 处理所有触发的硬件事件
+                // Handle all triggered hardware events
                 for (auto* line : event_lines) {
                     if (line->event_wait(std::chrono::milliseconds(0))) {
                         auto event = line->event_read();
@@ -107,14 +107,14 @@ void InfraredSensor::realEventLoop() {
 
 void InfraredSensor::handleGPIOEvent(gpiod::line& line, const gpiod::line_event& event) {
     try {
-        // 确定是哪个传感器触发了事件
+        // Determine which sensor triggered the event
         bool is_left_sensor = (&line == left_line_.get());
         bool is_right_sensor = (&line == right_line_.get());
         
-        // 红外传感器逻辑：LOW = 检测到障碍物，HIGH = 无障碍物
+        // Infrared sensor logic: LOW = obstacle detected, HIGH = no obstacle
         bool obstacle_detected = (event.event_type == gpiod::line_event::FALLING_EDGE);
         
-        // 更新对应传感器状态（原子操作）
+        // Update the corresponding sensor status (atomic operation)
         if (is_left_sensor) {
             left_detected_.store(obstacle_detected);
             LOG_DEBUG("Left IR sensor real event: " + std::string(obstacle_detected ? "OBSTACLE" : "CLEAR"));
@@ -123,7 +123,7 @@ void InfraredSensor::handleGPIOEvent(gpiod::line& line, const gpiod::line_event&
             LOG_DEBUG("Right IR sensor real event: " + std::string(obstacle_detected ? "OBSTACLE" : "CLEAR"));
         }
         
-        // 触发回调（如果已注册）
+        // Trigger callback (if registered)
         {
             std::lock_guard<std::mutex> lock(callback_mutex_);
             if (boundary_callback_) {
@@ -142,7 +142,7 @@ void InfraredSensor::registerCallback(std::function<void(bool, bool)> callback) 
     LOG_INFO("IR sensor callback registered for real-time boundary detection");
 }
 
-// 线程安全的状态查询方法
+// Thread-safe status query method
 bool InfraredSensor::isLeftDetected() const {
     return left_detected_.load();
 }
@@ -155,19 +155,19 @@ bool InfraredSensor::isBoundaryDetected() const {
     return left_detected_.load() || right_detected_.load();
 }
 
-// 测试兼容性方法
+// Testing compatibility methods
 bool InfraredSensor::isRunning() const {
     return running_.load();
 }
 
 bool InfraredSensor::selfTest() {
     try {
-        // 简单的自检：验证GPIO线路可用性
+        // Simple self-test: Verify GPIO line availability
         if (!left_line_ || !right_line_) {
             return false;
         }
         
-        // 读取当前状态验证硬件连接
+        // Read the current status to verify the hardware connection
         int left_value = left_line_->get_value();
         int right_value = right_line_->get_value();
         
@@ -183,8 +183,8 @@ bool InfraredSensor::selfTest() {
 }
 
 void InfraredSensor::setPollingInterval(std::chrono::milliseconds interval) {
-    // 注意：在真实事件驱动模式下，这个方法只是为了兼容测试
-    // 实际上不需要轮询间隔，因为是硬件中断驱动
+    // Note: In real event-driven mode, this method is only for compatibility testing
+    // In fact, no polling interval is required because it is hardware interrupt driven
     LOG_INFO("Note: Polling interval not applicable in real event-driven mode. Using hardware interrupts.");
 }
 
