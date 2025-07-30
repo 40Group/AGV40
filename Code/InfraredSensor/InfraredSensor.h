@@ -11,26 +11,26 @@
 
 class InfraredSensor {
 private:
-    // GPIO配置
+    // GPIO Configuration
     std::unique_ptr<gpiod::chip> chip_;
     std::unique_ptr<gpiod::line> left_line_;
     std::unique_ptr<gpiod::line> right_line_;
     
-    // 线程和状态
+    // Threads and States
     std::thread event_thread_;
     std::atomic<bool> running_;
     std::atomic<bool> left_detected_;
     std::atomic<bool> right_detected_;
     
-    // 回调系统
+    // Callback system
     std::function<void(bool, bool)> boundary_callback_;
     std::mutex callback_mutex_;
     
-    // GPIO引脚
+    // GPIO pins
     int left_pin_;
     int right_pin_;
     
-    // 真实事件驱动方法
+    // True event-driven approach
     void realEventLoop();
     void setupGPIOEvents();
     void handleGPIOEvent(gpiod::line& line, const gpiod::line_event& event);
@@ -39,30 +39,30 @@ public:
     InfraredSensor(int left_pin = 19, int right_pin = 26);
     ~InfraredSensor();
     
-    // 初始化和控制
+    // Initialization and control
     bool initialize();
     void start();
     void stop();
     
-    // 回调注册
+    // Callback Registration
     void registerCallback(std::function<void(bool, bool)> callback);
     
-    // 状态查询（原子操作，线程安全）
+    // Status query (atomic operation, thread-safe)
     bool isLeftDetected() const;
     bool isRightDetected() const;
     bool isBoundaryDetected() const;
     
-    // 测试相关方法（保持兼容性）
+    // Test related methods (maintain compatibility)
     bool isRunning() const;
     bool selfTest();
     void setPollingInterval(std::chrono::milliseconds interval); // 现在只是占位符
     void shutdown();
     
-    // 扩展功能（保持测试兼容）
+    // Extended functionality (keep test compatible)
     struct SensorStates {
         bool left;
         bool right;
-        bool front;  // 为了兼容测试，front = left || right
+        bool front;  // For compatibility testing, front = left || right
     };
     SensorStates getAllStates() const;
     bool isAnyObstacle() const;
