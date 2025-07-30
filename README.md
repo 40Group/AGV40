@@ -52,7 +52,7 @@ Figure 5: Infraed Sensor
 </p>
 
 <div align="center">
-  <img src="Image/Ultra Sensor.jpg" width="200" alt="Ultra Sensor">
+  <img src="Image/Ultra sensor.jpg" width="200" alt="Ultra sensor">
 </div>
 
 <p align="center">
