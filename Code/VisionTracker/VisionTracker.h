@@ -6,50 +6,50 @@
 #include <gpiod.hpp>
 #include <memory>
 
-class TimerManager; // 前向声明
+class TimerManager; // Forward statement
 
 class VisionTracker {
 private:
-    // 摄像头配置
-    cv::VideoCapture camera_;
+    // Camera Configuration
+    cv::VideoCapture camera_;F
     int camera_id_;
     
-    // GPIO集成（用于外部触发）
+    // GPIO integration (for external triggering)
     std::unique_ptr<gpiod::chip> gpio_chip_;
     std::unique_ptr<gpiod::line> trigger_line_;
     int trigger_pin_;
     std::string chip_path_;
     
-    // 状态数据
+    // Status data
     std::atomic<bool> line_detected_;
     std::atomic<double> line_deviation_;
     std::atomic<bool> processing_active_;
     
-    // 回调系统
+    // Callback system
     VisionCallback vision_callback_;
     std::mutex callback_mutex_;
     
-    // 图像处理参数
+    // Image processing parameters
     cv::Scalar hsv_lower_;
     cv::Scalar hsv_upper_;
     int canny_low_;
     int canny_high_;
     
-    // TimerManager引用
+    // TimerManager reference
     TimerManager* timer_manager_;
     
-    // 图像处理缓冲区
+    // Image processing buffer
     cv::Mat current_frame_;
     std::mutex frame_mutex_;
     
-    // 事件处理方法
+    // Event handler
     void captureFrame();
     void processFrame();
     cv::Mat preprocessImage(const cv::Mat& frame);
     bool detectLine(const cv::Mat& processed, double& deviation);
     void handleVisionResult(bool detected, double deviation);
     
-    // GPIO触发处理
+    // GPIO Trigger Handling
     void handleExternalTrigger();
     void setupGPIO();
     
@@ -58,26 +58,26 @@ public:
                   const std::string& chip_path = "/dev/gpiochip0");
     ~VisionTracker();
     
-    // 初始化
+    // Initialisation
     bool initialize(TimerManager* timer_manager);
     
-    // 事件驱动启动
+    // Event-driven startup (computing)
     void startEventDriven();
     void stopEventDriven();
     
-    // 回调注册
+    // Callback registration
     void registerCallback(VisionCallback callback);
     
-    // 状态查询
+    // Status Enquiry
     bool isLineDetected() const;
     double getLineDeviation() const;
     bool isProcessingActive() const;
     
-    // 配置
+    // Configure
     void setLineColor(const cv::Scalar& hsv_lower, const cv::Scalar& hsv_upper);
     void setCannyThresholds(int low_threshold, int high_threshold);
     
-    // 手动触发处理（用于测试）
+    // Manual trigger processing (for testing)
     void requestFrameCapture();
 };
 
