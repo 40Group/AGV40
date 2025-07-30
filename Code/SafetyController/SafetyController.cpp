@@ -34,12 +34,12 @@ bool SafetyController::initialize() {
 
 void SafetyController::setupEmergencyButtonGPIO() {
     try {
-        // 获取紧急按钮GPIO线路
+        // Obtain emergency button GPIO circuit
         emergency_button_line_ = std::make_unique<gpiod::line>(
             chip_->get_line(emergency_button_pin_)
         );
         
-        // 配置为下降沿中断（按钮按下时触发）
+        // Configure as falling edge interrupt (triggered when button is pressed)
         emergency_button_line_->request({
             "emergency_button", 
             gpiod::line_request::EVENT_FALLING_EDGE,
@@ -61,7 +61,7 @@ void SafetyController::start() {
     running_ = true;
     start_time_ = std::chrono::steady_clock::now();
     
-    // 启动真实GPIO事件监听线程
+    // Start the real GPIO event listening thread
     emergency_button_thread_ = std::thread(&SafetyController::realEmergencyButtonLoop, this);
     
     LOG_INFO("SafetyController started with REAL event-driven monitoring");
@@ -82,7 +82,7 @@ void SafetyController::realEmergencyButtonLoop() {
     
     while (running_.load()) {
         try {
-            // 真实事件驱动：阻塞等待硬件GPIO中断
+            // Real-event driven: Blocking wait for hardware GPIO interrupt
             if (emergency_button_line_->event_wait(std::chrono::seconds(1))) {
                 auto event = emergency_button_line_->event_read();
                 
@@ -91,7 +91,7 @@ void SafetyController::realEmergencyButtonLoop() {
                 }
             }
             
-            // 事件驱动健康检查（非轮询）
+            // Event-driven health checks (non-polling)
             checkHealthEventDriven();
             
         } catch (const std::exception& e) {
@@ -109,7 +109,7 @@ void SafetyController::handleEmergencyButtonEvent() {
 }
 
 void SafetyController::checkHealthEventDriven() {
-    // 事件驱动健康检查：只在有健康更新时检查
+    // Event-driven health checks: only check when there are health updates
     auto now = std::chrono::steady_clock::now();
     const auto timeout = std::chrono::seconds(5);
     
@@ -119,7 +119,7 @@ void SafetyController::checkHealthEventDriven() {
     
     bool health_changed = false;
     
-    // 检查各模块健康状态超时
+    // Check the health status of each module Timeout
     if (now - last_vision > timeout && vision_healthy_.load()) {
         vision_healthy_ = false;
         health_changed = true;
@@ -138,7 +138,7 @@ void SafetyController::checkHealthEventDriven() {
         LOG_WARNING("Temperature controller timeout detected - health event triggered");
     }
     
-    // 只在健康状态实际改变时触发紧急停止
+    // Trigger emergency stop only when actual health status changes
     if (health_changed && !isSystemHealthy() && !emergency_active_.load()) {
         triggerEmergencyStop("System health monitoring detected failure");
     }
@@ -150,7 +150,7 @@ void SafetyController::registerCallback(SafetyCallback callback) {
     LOG_INFO("Safety callback registered for real-time emergency events");
 }
 
-// 事件驱动安全检查方法（由外部传感器回调触发）
+// Event-driven security inspection method (triggered by external sensor callback)
 void SafetyController::checkTemperatureEvent(double current_temp) {
     double max_temp = max_temperature_.load();
     
@@ -185,7 +185,7 @@ void SafetyController::checkOperationTimeEvent() {
 
 void SafetyController::triggerEmergencyStop(const std::string& reason) {
     if (emergency_active_.load()) {
-        return; // 已经在紧急状态
+        return; // Already in a state of emergency
     }
     
     emergency_active_ = true;
@@ -194,7 +194,7 @@ void SafetyController::triggerEmergencyStop(const std::string& reason) {
     
     LOG_ERROR("🚨 EMERGENCY STOP TRIGGERED: " + reason);
     
-    // 立即触发安全回调（事件驱动）
+    // Immediately trigger security callback
     {
         std::lock_guard<std::mutex> lock(callback_mutex_);
         if (safety_callback_) {
@@ -216,7 +216,7 @@ void SafetyController::resetEmergency() {
     g_emergency_stop.store(false);
     g_system_state.store(SystemState::RUNNING);
     
-    // 重置健康状态
+    // Reset health status
     vision_healthy_ = true;
     ultrasonic_healthy_ = true;
     temperature_healthy_ = true;
@@ -244,7 +244,7 @@ void SafetyController::setMaxOperationTime(int minutes) {
     LOG_INFO("Maximum operation time set to " + std::to_string(minutes) + " minutes");
 }
 
-// 事件驱动健康状态更新（由其他模块回调触发）
+// health status updates
 void SafetyController::updateVisionHealth() {
     last_vision_update_.store(std::chrono::steady_clock::now());
     vision_healthy_ = true;
