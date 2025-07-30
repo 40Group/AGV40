@@ -18,6 +18,21 @@ Figure 1: Line tracking
 Figure 2: Obstacle avoidance
 </p>
 
+
+<table>
+  <tr>
+    <td align="center">
+      <img src="Image/DS18B20 temperature sensor.jpg" width="200"><br>
+      <p>Figure 8: DS18B20 Temperature Sensor</p>
+    </td>
+    <td align="center">
+      <img src="Image/XD-7082 Peltier cooling plate.jpg" width="200"><br>
+      <p>Figure 9: XD-7082 Peltier Cooling Plate</p>
+    </td>
+  </tr>
+</table>
+
+
 ## 2. Hardware and Component Selection
 ### 2.1Hardware and Architecture
   At the hardware level, the motor system consists of two 12V DC motors controlled via an L298N motor driver. GPIOs 1, 2, 3 are used for the left motor (PWM, DIR1, DIR2), and GPIOs 4, 5, 6 for the right motor. The robot navigates autonomously using a Raspberry Pi Camera Module v2, which captures real-time road data. The VisionTracker module leverages OpenCV to perform grayscale conversion, Gaussian blurring, adaptive thresholding, and Hough transform to extract line position and orientation. These parameters are fed into a PID controller to generate differential motor commands for smooth line-following.
