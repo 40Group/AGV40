@@ -24,7 +24,7 @@ void TimerManager::start() {
     
     running_ = true;
     
-    // 启动真实事件驱动线程（非轮询）
+    // Start a real event-driven thread
     event_thread_ = std::thread(&TimerManager::realEventDrivenLoop, this);
     
     LOG_INFO("TimerManager started with REAL event-driven timing");
@@ -33,19 +33,19 @@ void TimerManager::start() {
 void TimerManager::stop() {
     running_ = false;
     
-    // 通知事件线程退出
+    // Notify the event thread to exit
     event_condition_.notify_all();
     
     if (event_thread_.joinable()) {
         event_thread_.join();
     }
     
-    // 清理所有定时器
+    // Clean up all timers
     {
         std::lock_guard<std::mutex> lock1(queue_mutex_);
         std::lock_guard<std::mutex> lock2(timers_mutex_);
         
-        // 清空事件队列
+        // Clear the incident queue
         std::priority_queue<TimerEvent> empty_queue;
         event_queue_.swap(empty_queue);
         
@@ -64,7 +64,7 @@ void TimerManager::realEventDrivenLoop() {
                                  std::chrono::milliseconds(0), nullptr, false};
             bool has_event = false;
             
-            // 获取下一个要触发的事件
+            // Get the next event to trigger
             {
                 std::unique_lock<std::mutex> lock(queue_mutex_);
                 
@@ -76,7 +76,7 @@ void TimerManager::realEventDrivenLoop() {
             }
             
             if (!has_event) {
-                // 没有事件时，等待新事件或退出信号
+                // When there are no events, wait for a new event or exit signal
                 std::unique_lock<std::mutex> lock(queue_mutex_);
                 event_condition_.wait(lock, [this] { 
                     return !running_.load() || !event_queue_.empty(); 
@@ -84,13 +84,13 @@ void TimerManager::realEventDrivenLoop() {
                 continue;
             }
             
-            // 等待到事件触发时间（真实事件驱动！）
+            // Wait until the event triggers time
             auto now = std::chrono::steady_clock::now();
             if (next_event.trigger_time > now) {
                 std::this_thread::sleep_until(next_event.trigger_time);
             }
             
-            // 检查定时器是否仍然活跃
+            // Check if the timer is still active
             bool timer_active = false;
             {
                 std::lock_guard<std::mutex> lock(timers_mutex_);
@@ -99,10 +99,9 @@ void TimerManager::realEventDrivenLoop() {
             }
             
             if (timer_active && running_.load()) {
-                // 处理事件（立即执行）
+                // Handling Events
                 processTimerEvent(next_event);
-                
-                // 如果是重复定时器，调度下一次事件
+            
                 if (next_event.repeat) {
                     scheduleNextTimerEvent(next_event);
                 }
@@ -120,7 +119,7 @@ void TimerManager::realEventDrivenLoop() {
 void TimerManager::processTimerEvent(const TimerEvent& event) {
     try {
         if (event.callback && running_.load() && !g_emergency_stop.load()) {
-            // 立即执行回调（事件驱动）
+            // Immediate Execution of Callbacks
             event.callback();
             LOG_DEBUG("Timer event " + std::to_string(event.timer_id) + " executed");
         }
@@ -130,19 +129,19 @@ void TimerManager::processTimerEvent(const TimerEvent& event) {
 }
 
 void TimerManager::scheduleNextTimerEvent(const TimerEvent& event) {
-    // 计算下一次触发时间
+    // Calculate the next trigger time
     auto next_trigger = std::chrono::steady_clock::now() + event.interval;
     
     TimerEvent next_event{event.timer_id, next_trigger, event.interval, 
                          event.callback, event.repeat};
     
-    // 将下一次事件加入队列
+    // Queue the next event
     {
         std::lock_guard<std::mutex> lock(queue_mutex_);
         event_queue_.push(next_event);
     }
     
-    // 通知事件线程有新事件
+    // Notify the event thread that there is a new event
     event_condition_.notify_one();
 }
 
@@ -155,22 +154,22 @@ int TimerManager::createTimer(std::chrono::milliseconds interval, TimerCallback 
     int timer_id = next_timer_id_.fetch_add(1);
     auto trigger_time = std::chrono::steady_clock::now() + interval;
     
-    // 创建定时器事件
+    // Create a timer event
     TimerEvent event{timer_id, trigger_time, interval, callback, repeat};
     
-    // 注册定时器
+    // Register the timer
     {
         std::lock_guard<std::mutex> lock(timers_mutex_);
         active_timers_[timer_id] = true;
     }
     
-    // 调度事件
+    // Schedule events
     {
         std::lock_guard<std::mutex> lock(queue_mutex_);
         event_queue_.push(event);
     }
     
-    // 通知事件线程
+    // Notify the event thread
     event_condition_.notify_one();
     
     LOG_INFO("Created event-driven timer " + std::to_string(timer_id) + 
@@ -188,7 +187,7 @@ void TimerManager::removeTimer(int timer_id) {
     
     auto it = active_timers_.find(timer_id);
     if (it != active_timers_.end()) {
-        it->second = false;  // 标记为非活跃，事件队列中的事件会被忽略
+        it->second = false;  
         active_timers_.erase(it);
         LOG_INFO("Removed timer " + std::to_string(timer_id));
     }
@@ -211,7 +210,6 @@ void TimerManager::resumeTimer(int timer_id) {
     if (it != active_timers_.end()) {
         it->second = true;
         LOG_INFO("Resumed timer " + std::to_string(timer_id));
-        // 注意：resume不会重新调度事件，需要用户重新创建定时器
     }
 }
 
@@ -226,7 +224,7 @@ int TimerManager::scheduleOnce(int delay_ms, TimerCallback callback) {
 void TimerManager::triggerImmediateEvent(TimerCallback callback) {
     if (!callback) return;
     
-    // 立即触发事件（不经过队列）
+    // Trigger an event immediately 
     try {
         if (running_.load() && !g_emergency_stop.load()) {
             callback();
@@ -238,7 +236,7 @@ void TimerManager::triggerImmediateEvent(TimerCallback callback) {
 }
 
 void TimerManager::scheduleDelayedEvent(TimerCallback callback, std::chrono::milliseconds delay) {
-    // 创建一次性定时器
+    // Create a one-time timer
     createOneShotTimer(delay, callback);
 }
 
@@ -263,13 +261,3 @@ int TimerManager::getPendingEventCount() {
     std::lock_guard<std::mutex> lock(queue_mutex_);
     return static_cast<int>(event_queue_.size());
 }
-
-// ❌ 删除所有轮询相关代码！
-/*
-void TimerManager::timerLoop() {
-    while (running_.load() && !g_emergency_stop.load()) {
-        // ... 轮询检查逻辑 ...
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));  // ❌ 违规！
-    }
-}
-*/
