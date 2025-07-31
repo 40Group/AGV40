@@ -54,3 +54,5 @@ sensor.setObstacleThreshold(15.0);  // Triggers callback on change
 // Query current state (thread-safe)
 double dist = sensor.getDistance();
 bool obstacle = sensor.isObstacleDetected();
+
+The UltrasonicSensor module performs event-driven distance measurement using GPIO-based trigger and echo pins, relying on libgpiod for efficient edge-interrupt handling. It periodically emits a 10 μs trigger pulse and waits for echo responses via rising and falling edge events. Upon detecting both edges, it calculates the pulse duration and derives the distance using the speed of sound. If the measured distance falls below a configurable threshold, a registered callback is triggered to notify the system of an obstacle. The design ensures non-blocking, low-latency operation suitable for real-time embedded systems.
