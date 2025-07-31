@@ -96,3 +96,5 @@ CRITICAL: This is TRUE event-driven programming
 - NO polling loops
 - ONLY hardware interrupt events
 - Real-time system compliant
+
+The InfraredSensor module provides real-time obstacle detection using GPIO-based infrared sensors on both the left and right sides of the robot. It leverages edge-triggered hardware interrupts via libgpiod to respond instantly to environmental changes without polling. When an obstacle is detected (signaled by a falling edge), the module updates internal sensor states and invokes a user-registered callback function to trigger appropriate safety or navigation responses. This event-driven design ensures low latency and efficient CPU usage.
